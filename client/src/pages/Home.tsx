@@ -179,7 +179,7 @@ export default function Home() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="space-y-4"
                   >
-                    <div className="relative aspect-[4/5] md:aspect-video bg-black/50 rounded-xl overflow-hidden border border-white/10 flex items-center justify-center group">
+                    <div className="relative aspect-[9/16] max-h-[600px] mx-auto bg-black/50 rounded-xl overflow-hidden border border-white/10 flex items-center justify-center group">
                       {previewUrl ? (
                         file?.type.startsWith('video/') ? (
                           <video 
