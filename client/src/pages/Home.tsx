@@ -43,6 +43,7 @@ const MOCK_ANALYSIS: AnalysisResult = {
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -55,7 +56,10 @@ export default function Home() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      const url = URL.createObjectURL(selectedFile);
+      setPreviewUrl(url);
     }
   };
 
@@ -83,6 +87,10 @@ export default function Home() {
 
   const reset = () => {
     setFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
     setCaption("");
     setAnalysis(null);
     setProgress(0);
@@ -172,20 +180,40 @@ export default function Home() {
                     className="space-y-4"
                   >
                     <div className="relative aspect-[4/5] md:aspect-video bg-black/50 rounded-xl overflow-hidden border border-white/10 flex items-center justify-center group">
-                      <img src={bgImage} className="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm mix-blend-luminosity" alt="Preview bg" />
-                      
-                      <div className="relative z-10 flex flex-col items-center">
-                        <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-3">
-                          <Play className="w-6 h-6 text-white ml-1" />
-                        </div>
-                        <span className="font-medium">{file.name}</span>
-                        <span className="text-xs text-white/50 mt-1">Ready to test</span>
-                      </div>
+                      {previewUrl ? (
+                        file?.type.startsWith('video/') ? (
+                          <video 
+                            src={previewUrl} 
+                            className="w-full h-full object-cover" 
+                            controls 
+                            autoPlay 
+                            muted 
+                            loop
+                          />
+                        ) : (
+                          <img 
+                            src={previewUrl} 
+                            className="w-full h-full object-cover" 
+                            alt="Preview" 
+                          />
+                        )
+                      ) : (
+                        <>
+                          <img src={bgImage} className="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm mix-blend-luminosity" alt="Preview bg" />
+                          <div className="relative z-10 flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-3">
+                              <Play className="w-6 h-6 text-white ml-1" />
+                            </div>
+                            <span className="font-medium">{file?.name}</span>
+                            <span className="text-xs text-white/50 mt-1">Ready to test</span>
+                          </div>
+                        </>
+                      )}
                       
                       {!isUploading && !analysis && (
                         <button 
-                          onClick={(e) => { e.stopPropagation(); setFile(null); }}
-                          className="absolute top-4 right-4 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center hover:bg-white/20 transition backdrop-blur-md"
+                          onClick={(e) => { e.stopPropagation(); reset(); }}
+                          className="absolute top-4 right-4 z-20 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center hover:bg-white/20 transition backdrop-blur-md"
                           data-testid="btn-remove-file"
                         >
                           <XCircle className="w-5 h-5 text-white/70" />
