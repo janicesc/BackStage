@@ -289,9 +289,9 @@ export default function Home() {
                   className="h-full flex flex-col relative"
                   data-testid="analysis-results"
                 >
-                  <div className="flex items-end justify-between mb-10 pb-6 border-b border-border">
+                  <div className="flex items-end justify-between mb-8 pb-6 border-b border-border">
                     <div>
-                      <h2 className="font-display text-3xl uppercase tracking-wider mb-2 text-foreground">Analysis</h2>
+                      <h2 className="font-display font-medium text-3xl uppercase tracking-wider mb-2 text-foreground">Analysis</h2>
                       <div className="text-muted-foreground text-sm font-light leading-relaxed max-w-sm">
                         {analysis.summary}
                       </div>
@@ -299,72 +299,76 @@ export default function Home() {
                     
                     <div className="flex flex-col items-end">
                       <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2 font-display">Virality Score</div>
-                      <div className={`text-7xl font-display font-light leading-none ${getScoreColor(analysis.score)}`}>
+                      <div className={`text-7xl font-display font-light leading-none tracking-tighter ${getScoreColor(analysis.score)}`}>
                         {analysis.score}
                         <span className="text-3xl text-muted-foreground/50">/100</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-6 mb-10 text-center">
+                  <div className="grid grid-cols-3 gap-4 mb-8 text-center">
                     <div className="bg-card/50 border border-border rounded-lg p-3">
-                      <div className="text-xs font-display uppercase tracking-widest text-muted-foreground mb-1">Category</div>
-                      <div className="font-light text-base">{analysis.category}</div>
+                      <div className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Category</div>
+                      <div className="font-medium text-sm">{analysis.category}</div>
                     </div>
                     <div className="bg-card/50 border border-border rounded-lg p-3">
-                      <div className="text-xs font-display uppercase tracking-widest text-muted-foreground mb-1">Format</div>
-                      <div className="font-light text-base">{analysis.format}</div>
+                      <div className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Format</div>
+                      <div className="font-medium text-sm">{analysis.format}</div>
                     </div>
                     <div className="bg-card/50 border border-border rounded-lg p-3">
-                      <div className="text-xs font-display uppercase tracking-widest text-muted-foreground mb-1">Length</div>
-                      <div className="font-light text-base">{analysis.length}</div>
+                      <div className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Length</div>
+                      <div className="font-medium text-sm">{analysis.length}</div>
                     </div>
                   </div>
 
-                  <div className="space-y-10 flex-1 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+                  <div className="space-y-8 flex-1 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                     
-                    <div>
-                      <div className="flex items-center gap-3 mb-6">
-                        <CheckCircle2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
-                        <h3 className="font-display text-xl uppercase tracking-wider text-foreground">What's Working Well</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      {/* Good Column */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-4">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                          <h3 className="font-display font-medium text-base uppercase tracking-wider text-foreground">What's Working Well</h3>
+                        </div>
+                        <div className="space-y-3">
+                          {analysis.good.map((item, i) => (
+                            <div key={i} className="text-foreground/80 font-light flex items-start gap-3">
+                              <span className="mt-1.5 w-1 h-1 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0" />
+                              <span className="leading-snug text-sm">{item}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="space-y-4">
-                        {analysis.good.map((item, i) => (
-                          <div key={i} className="text-foreground/80 font-light flex items-start gap-4">
-                            <span className="mt-2 w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0" />
-                            <span className="leading-relaxed text-base">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="pt-8 border-t border-border">
-                      <div className="flex items-center gap-3 mb-6">
-                        <XCircle className="w-5 h-5 text-muted-foreground" />
-                        <h3 className="font-display text-xl uppercase tracking-wider text-foreground">Areas to Improve</h3>
-                      </div>
-                      <div className="space-y-4">
-                        {analysis.bad.map((item, i) => (
-                          <div key={i} className="text-foreground/70 font-light flex items-start gap-4">
-                            <span className="mt-2 w-1.5 h-1.5 rounded-full bg-border shrink-0" />
-                            <span className="leading-relaxed text-base">{item}</span>
-                          </div>
-                        ))}
+                      
+                      {/* Bad Column */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-4">
+                          <XCircle className="w-4 h-4 text-muted-foreground" />
+                          <h3 className="font-display font-medium text-base uppercase tracking-wider text-foreground">Areas to Improve</h3>
+                        </div>
+                        <div className="space-y-3">
+                          {analysis.bad.map((item, i) => (
+                            <div key={i} className="text-foreground/70 font-light flex items-start gap-3">
+                              <span className="mt-1.5 w-1 h-1 rounded-full bg-border shrink-0" />
+                              <span className="leading-snug text-sm">{item}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="pt-8 border-t border-border">
-                      <div className="flex items-center gap-3 mb-6">
-                        <AlertCircle className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                        <h3 className="font-display text-xl uppercase tracking-wider text-foreground">Pro Tips for Next Time</h3>
+                    <div className="pt-6 border-t border-border">
+                      <div className="flex items-center gap-2 mb-4">
+                        <AlertCircle className="w-4 h-4 text-accent dark:text-accent" />
+                        <h3 className="font-display font-medium text-base uppercase tracking-wider text-foreground">Pro Tips for Next Time</h3>
                       </div>
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         {analysis.tips.map((tip, i) => (
-                          <div key={i} className="text-foreground/80 font-light flex items-start gap-4">
-                            <span className="mt-0.5 w-6 h-6 rounded-full border border-amber-500/30 text-amber-500 dark:text-amber-400 flex items-center justify-center text-xs shrink-0 font-medium bg-amber-500/5">
+                          <div key={i} className="text-foreground/80 font-light flex items-start gap-3">
+                            <span className="mt-0.5 w-5 h-5 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs shrink-0 font-medium">
                               {i + 1}
                             </span>
-                            <span className="leading-relaxed text-base">{tip}</span>
+                            <span className="leading-snug text-sm">{tip}</span>
                           </div>
                         ))}
                       </div>
