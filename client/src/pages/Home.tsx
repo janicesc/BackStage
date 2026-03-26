@@ -20,31 +20,34 @@ type AnalysisResult = {
 };
 
 const MOCK_ANALYSIS: AnalysisResult = {
-  score: 42,
-  topic: "Urban Streetwear Summer Fit",
-  category: "Fashion",
-  summary: "A fast-paced montage of a model walking down a city street showing off a new summer clothing line. The pacing is a bit too slow in the first 3 seconds.",
+  score: 94,
+  topic: "Celebrity Salon Hair Transformation",
+  category: "Beauty & Lifestyle",
+  summary: "A highly engaging vlog-style transformation at a premium Korean hair salon. The video excellently showcases the full experience from entry to final results, maintaining viewer interest through fast-paced cuts and clear visual progression.",
   format: "Video",
-  length: "15s",
+  length: "52s",
   good: [
-    "High-quality cinematography and lighting.",
-    "Aesthetic matches current streetwear trends."
+    "The opening immediately sets a high-end, aspirational vibe that stops the scroll.",
+    "Fast-paced progression from scalp diagnosis to styling keeps retention high.",
+    "The final reveal is striking, aspirational, and highly shareable.",
+    "Tagging the specific stylist and location drives high engagement and saves."
   ],
   bad: [
-    "The hook is too slow. The first 3 seconds don't clearly state the value proposition.",
-    "No text overlay on screen to grab silent viewers."
+    "The text overlays in the middle section could be slightly shorter for easier reading.",
+    "The transition around the 15s mark is slightly jarring."
   ],
   tips: [
-    "Add a bold text hook like 'My go-to summer fit ☀️' in the first frame.",
-    "Cut the first 2 seconds of walking; start immediately on the beat drop.",
-    "Increase the pace of the initial cuts to match the audio."
+    "Condense the text overlays into punchy, 3-4 word phrases.",
+    "Add a clear Call-To-Action (CTA) at the end encouraging viewers to save the video for their next trip to Korea."
   ]
 };
+
+const INITIAL_CAPTION = `Visiting one of the best beauty salons in Korea, Chahong Ardor Flagship in 🇰🇷 All their hairstylists are amazing and have great techniques. Above all they have the best vibes!!! Here come all the famous Korean TV, kpop and kdramas artists 💕 My stylist was and I loved her ❤️ Follow her for hair tips ✨ If you travel to Korea and don't go to a Korea Hair Salon... did you really go to Korea? 🤯 I just went with a friend and they treated me amazing!!!! Thank you for the complementary service, they made me feel like a. ❤️ @Yun jin _ Chahong@차홍 CHAHONG OFFICIAL#celebrityhairstylist#hairstylisttips`;
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [caption, setCaption] = useState("");
+  const [caption, setCaption] = useState(INITIAL_CAPTION);
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
@@ -91,21 +94,15 @@ export default function Home() {
       URL.revokeObjectURL(previewUrl);
       setPreviewUrl(null);
     }
-    setCaption("");
+    setCaption(INITIAL_CAPTION);
     setAnalysis(null);
     setProgress(0);
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-emerald-500";
-    if (score >= 50) return "text-amber-500";
-    return "text-rose-500";
-  };
-
-  const getScoreBg = (score: number) => {
-    if (score >= 80) return "bg-emerald-500/10 border-emerald-500/20";
-    if (score >= 50) return "bg-amber-500/10 border-amber-500/20";
-    return "bg-rose-500/10 border-rose-500/20";
+    if (score >= 80) return "text-emerald-400";
+    if (score >= 50) return "text-amber-400";
+    return "text-rose-400";
   };
 
   return (
@@ -122,7 +119,7 @@ export default function Home() {
       </div>
 
       {/* Header */}
-      <header className="relative z-10 p-6 flex items-center justify-between border-b border-white/10 backdrop-blur-md bg-black/20">
+      <header className="relative z-10 p-6 flex items-center justify-between border-b border-white/5 backdrop-blur-md bg-black/20">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-white text-black flex items-center justify-center font-display font-bold text-xl rounded-sm">B</div>
           <span className="font-display text-xl tracking-widest uppercase">BackStage</span>
@@ -132,18 +129,16 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="relative z-10 flex-1 flex items-center justify-center p-6 md:p-12">
-        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           
           {/* Left Column: Upload / Preview */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div className="space-y-2">
               <h1 className="text-4xl md:text-5xl font-display uppercase tracking-tight">Dry Run Your Post.</h1>
-              <p className="text-white/60 text-lg">Test your hook before it goes live. Stop the scroll.</p>
+              <p className="text-white/50 text-lg font-light">Test your hook before it goes live. Stop the scroll.</p>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-              
+            <div className="bg-transparent border border-white/10 rounded-2xl p-6 backdrop-blur-xl relative overflow-hidden">
               <AnimatePresence mode="wait">
                 {!file ? (
                   <motion.div 
@@ -151,16 +146,16 @@ export default function Home() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col items-center justify-center py-16 border-2 border-dashed border-white/10 rounded-xl cursor-pointer hover:border-white/30 hover:bg-white/[0.02] transition-colors"
+                    className="flex flex-col items-center justify-center py-20 rounded-xl cursor-pointer hover:bg-white/[0.02] transition-colors"
                     onClick={handleFileClick}
                     data-testid="upload-area"
                   >
-                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                      <Upload className="w-8 h-8 text-white/70" />
+                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                      <Upload className="w-6 h-6 text-white/70" />
                     </div>
-                    <h3 className="font-display text-xl mb-2">Upload Content</h3>
-                    <p className="text-white/50 text-sm mb-6 text-center max-w-xs">Drag and drop your video or image here, or click to browse files.</p>
-                    <Button variant="secondary" className="bg-white text-black hover:bg-white/90">
+                    <h3 className="font-display text-xl mb-2 tracking-wide uppercase">Upload Content</h3>
+                    <p className="text-white/40 text-sm mb-8 text-center max-w-xs font-light">Drop your video or image here, or click to browse files.</p>
+                    <Button variant="secondary" className="bg-white text-black hover:bg-white/90 rounded-full px-8">
                       Select File
                     </Button>
                     <input 
@@ -175,11 +170,11 @@ export default function Home() {
                 ) : (
                   <motion.div
                     key="preview"
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="space-y-4"
+                    className="space-y-6"
                   >
-                    <div className="relative aspect-[9/16] max-h-[600px] mx-auto bg-black/50 rounded-xl overflow-hidden border border-white/10 flex items-center justify-center group">
+                    <div className="relative aspect-[9/16] max-h-[500px] mx-auto bg-black/40 rounded-xl overflow-hidden flex items-center justify-center group">
                       {previewUrl ? (
                         file?.type.startsWith('video/') ? (
                           <video 
@@ -199,13 +194,13 @@ export default function Home() {
                         )
                       ) : (
                         <>
-                          <img src={bgImage} className="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm mix-blend-luminosity" alt="Preview bg" />
+                          <img src={bgImage} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-xl mix-blend-luminosity" alt="Preview bg" />
                           <div className="relative z-10 flex flex-col items-center">
-                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-3">
+                            <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center mb-3">
                               <Play className="w-6 h-6 text-white ml-1" />
                             </div>
-                            <span className="font-medium">{file?.name}</span>
-                            <span className="text-xs text-white/50 mt-1">Ready to test</span>
+                            <span className="font-medium tracking-wide">{file?.name}</span>
+                            <span className="text-xs text-white/40 mt-1 uppercase tracking-widest">Ready to test</span>
                           </div>
                         </>
                       )}
@@ -213,19 +208,19 @@ export default function Home() {
                       {!isUploading && !analysis && (
                         <button 
                           onClick={(e) => { e.stopPropagation(); reset(); }}
-                          className="absolute top-4 right-4 z-20 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center hover:bg-white/20 transition backdrop-blur-md"
+                          className="absolute top-4 right-4 z-20 w-8 h-8 bg-black/40 rounded-full flex items-center justify-center hover:bg-white/20 transition backdrop-blur-md"
                           data-testid="btn-remove-file"
                         >
-                          <XCircle className="w-5 h-5 text-white/70" />
+                          <XCircle className="w-4 h-4 text-white/70" />
                         </button>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-white/70 uppercase tracking-wider font-display">Caption / Copy</label>
+                    <div className="space-y-3">
+                      <label className="text-xs font-medium text-white/50 uppercase tracking-widest font-display">Caption</label>
                       <textarea 
-                        className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 resize-none"
-                        rows={3}
+                        className="w-full bg-transparent border-b border-white/10 p-2 text-white placeholder:text-white/20 focus:outline-none focus:border-white/40 resize-none font-light text-sm"
+                        rows={4}
                         placeholder="Write your post caption here..."
                         value={caption}
                         onChange={(e) => setCaption(e.target.value)}
@@ -235,22 +230,22 @@ export default function Home() {
                     </div>
 
                     {!analysis && (
-                      <div className="pt-2">
+                      <div className="pt-4">
                         {isUploading ? (
-                          <div className="space-y-3">
-                            <div className="flex justify-between text-sm font-medium">
-                              <span className="text-white/70 animate-pulse">Running AI Stress Test...</span>
+                          <div className="space-y-4">
+                            <div className="flex justify-between text-xs font-display uppercase tracking-widest text-white/60">
+                              <span className="animate-pulse">Analyzing Hook...</span>
                               <span>{progress}%</span>
                             </div>
-                            <Progress value={progress} className="h-2 bg-white/10" />
+                            <Progress value={progress} className="h-1 bg-white/5" />
                           </div>
                         ) : (
                           <Button 
-                            className="w-full py-6 text-lg font-display uppercase tracking-wider bg-white text-black hover:bg-white/90"
+                            className="w-full py-6 text-sm font-display uppercase tracking-widest bg-white text-black hover:bg-white/90 rounded-none"
                             onClick={handleAnalyze}
                             data-testid="btn-analyze"
                           >
-                            Analyze Hook
+                            Analyze Performance
                           </Button>
                         )}
                       </div>
@@ -269,122 +264,107 @@ export default function Home() {
                   key="results"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-xl h-full flex flex-col relative overflow-hidden"
+                  className="h-full flex flex-col relative"
                   data-testid="analysis-results"
                 >
-                  <div className={`absolute top-0 right-0 w-64 h-64 bg-current opacity-5 blur-[100px] rounded-full pointer-events-none ${getScoreColor(analysis.score)}`} />
-                  
-                  <div className="flex items-start justify-between mb-8 border-b border-white/10 pb-6">
+                  <div className="flex items-end justify-between mb-10 pb-6 border-b border-white/10">
                     <div>
-                      <h2 className="font-display text-2xl uppercase tracking-wide mb-1">Analysis Complete</h2>
-                      <p className="text-white/50 text-sm">Based on past 3-month performance and category peers.</p>
+                      <h2 className="font-display text-3xl uppercase tracking-wider mb-2">Analysis</h2>
+                      <div className="text-white/40 text-sm font-light leading-relaxed max-w-sm">
+                        {analysis.summary}
+                      </div>
                     </div>
                     
                     <div className="flex flex-col items-end">
-                      <div className="text-xs uppercase tracking-widest text-white/50 mb-1 font-display">Virality Score</div>
-                      <div className={`text-6xl font-display font-bold leading-none ${getScoreColor(analysis.score)}`}>
+                      <div className="text-xs uppercase tracking-widest text-white/40 mb-2 font-display">Virality Score</div>
+                      <div className={`text-7xl font-display font-light leading-none ${getScoreColor(analysis.score)}`}>
                         {analysis.score}
-                        <span className="text-2xl text-white/30">/100</span>
+                        <span className="text-3xl text-white/20">/100</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                    <div className="bg-black/30 rounded-lg p-4 border border-white/5">
-                      <Tag className="w-4 h-4 text-white/40 mb-2" />
-                      <div className="text-xs text-white/50 mb-1">Category</div>
-                      <div className="font-medium text-sm truncate">{analysis.category}</div>
-                    </div>
-                    <div className="bg-black/30 rounded-lg p-4 border border-white/5">
-                      <LayoutGrid className="w-4 h-4 text-white/40 mb-2" />
-                      <div className="text-xs text-white/50 mb-1">Format</div>
-                      <div className="font-medium text-sm">{analysis.format}</div>
-                    </div>
-                    <div className="bg-black/30 rounded-lg p-4 border border-white/5">
-                      <Clock className="w-4 h-4 text-white/40 mb-2" />
-                      <div className="text-xs text-white/50 mb-1">Length</div>
-                      <div className="font-medium text-sm">{analysis.length}</div>
-                    </div>
-                    <div className="bg-black/30 rounded-lg p-4 border border-white/5">
-                      <BarChart3 className="w-4 h-4 text-white/40 mb-2" />
-                      <div className="text-xs text-white/50 mb-1">Topic</div>
-                      <div className="font-medium text-sm truncate" title={analysis.topic}>{analysis.topic}</div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-6 flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                  <div className="grid grid-cols-3 gap-6 mb-10 text-center">
                     <div>
-                      <h3 className="text-sm font-display uppercase tracking-widest text-white/50 mb-2">Summary</h3>
-                      <p className="text-white/80 leading-relaxed text-sm">{analysis.summary}</p>
+                      <div className="text-xs font-display uppercase tracking-widest text-white/40 mb-1">Category</div>
+                      <div className="font-light text-lg">{analysis.category}</div>
                     </div>
-
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-4">
-                        <div className="flex items-center gap-2 mb-3 text-emerald-400">
-                          <CheckCircle2 className="w-4 h-4" />
-                          <h3 className="font-display uppercase tracking-wider text-sm">What's Good</h3>
-                        </div>
-                        <ul className="space-y-2">
-                          {analysis.good.map((item, i) => (
-                            <li key={i} className="text-sm text-emerald-500/80 flex items-start gap-2">
-                              <span className="mt-1 w-1 h-1 rounded-full bg-emerald-500/50 shrink-0" />
-                              <span className="leading-snug">{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      <div className="bg-rose-500/5 border border-rose-500/10 rounded-xl p-4">
-                        <div className="flex items-center gap-2 mb-3 text-rose-400">
-                          <XCircle className="w-4 h-4" />
-                          <h3 className="font-display uppercase tracking-wider text-sm">What's Bad</h3>
-                        </div>
-                        <ul className="space-y-2">
-                          {analysis.bad.map((item, i) => (
-                            <li key={i} className="text-sm text-rose-500/80 flex items-start gap-2">
-                              <span className="mt-1 w-1 h-1 rounded-full bg-rose-500/50 shrink-0" />
-                              <span className="leading-snug">{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                    <div>
+                      <div className="text-xs font-display uppercase tracking-widest text-white/40 mb-1">Format</div>
+                      <div className="font-light text-lg">{analysis.format}</div>
                     </div>
+                    <div>
+                      <div className="text-xs font-display uppercase tracking-widest text-white/40 mb-1">Length</div>
+                      <div className="font-light text-lg">{analysis.length}</div>
+                    </div>
+                  </div>
 
-                    <div className="bg-amber-500/5 border border-amber-500/10 rounded-xl p-5">
-                      <div className="flex items-center gap-2 mb-4 text-amber-400">
-                        <AlertCircle className="w-5 h-5" />
-                        <h3 className="font-display uppercase tracking-wider text-sm">Tips for a Winning Hook</h3>
+                  <div className="space-y-12 flex-1 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                    
+                    <div>
+                      <div className="flex items-center gap-3 mb-6 text-white">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                        <h3 className="font-display text-xl uppercase tracking-wider">What's Working Well</h3>
                       </div>
-                      <div className="space-y-3">
-                        {analysis.tips.map((tip, i) => (
-                          <div key={i} className="flex items-start gap-3 bg-black/20 p-3 rounded-lg border border-white/5">
-                            <div className="w-6 h-6 rounded bg-amber-500/10 text-amber-500 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                              {i + 1}
-                            </div>
-                            <p className="text-sm text-white/80 leading-relaxed">{tip}</p>
+                      <div className="space-y-4">
+                        {analysis.good.map((item, i) => (
+                          <div key={i} className="text-white/70 font-light flex items-start gap-4">
+                            <span className="mt-2 w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
+                            <span className="leading-relaxed text-lg">{item}</span>
                           </div>
                         ))}
                       </div>
                     </div>
+                    
+                    <div className="pt-8 border-t border-white/5">
+                      <div className="flex items-center gap-3 mb-6 text-white">
+                        <XCircle className="w-5 h-5 text-white/50" />
+                        <h3 className="font-display text-xl uppercase tracking-wider">Areas to Improve</h3>
+                      </div>
+                      <div className="space-y-4">
+                        {analysis.bad.map((item, i) => (
+                          <div key={i} className="text-white/50 font-light flex items-start gap-4">
+                            <span className="mt-2 w-1 h-1 rounded-full bg-white/20 shrink-0" />
+                            <span className="leading-relaxed text-lg">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="pt-8 border-t border-white/5">
+                      <div className="flex items-center gap-3 mb-6 text-white">
+                        <AlertCircle className="w-5 h-5 text-amber-400" />
+                        <h3 className="font-display text-xl uppercase tracking-wider">Pro Tips for Next Time</h3>
+                      </div>
+                      <div className="space-y-4">
+                        {analysis.tips.map((tip, i) => (
+                          <div key={i} className="text-white/70 font-light flex items-start gap-4">
+                            <span className="mt-1 w-6 h-6 rounded-full border border-amber-400/30 text-amber-400 flex items-center justify-center text-xs shrink-0 font-medium">
+                              {i + 1}
+                            </span>
+                            <span className="leading-relaxed text-lg">{tip}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
                   </div>
 
-                  <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
-                    <Button variant="ghost" className="text-white/50 hover:text-white hover:bg-white/5" onClick={reset}>
+                  <div className="mt-8 pt-8 flex items-center justify-between">
+                    <button className="text-xs uppercase tracking-widest font-display text-white/40 hover:text-white transition-colors" onClick={reset}>
                       Test Another Post
-                    </Button>
-                    <Button className="bg-white text-black hover:bg-white/90 gap-2">
-                      Export Report <ChevronRight className="w-4 h-4" />
-                    </Button>
+                    </button>
+                    <button className="flex items-center gap-2 text-xs uppercase tracking-widest font-display hover:text-white/80 transition-colors group">
+                      Export Report <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
                   </div>
                 </motion.div>
               ) : (
-                <div className="h-full border border-white/5 rounded-2xl flex flex-col items-center justify-center p-8 text-center bg-white/[0.01]">
-                  <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
-                    <Video className="w-10 h-10 text-white/20" />
-                  </div>
-                  <h3 className="font-display text-xl mb-2 text-white/50 uppercase tracking-widest">Waiting for Upload</h3>
-                  <p className="text-white/30 text-sm max-w-sm">
-                    Upload a video or image to get instant AI feedback on its potential performance and hook quality.
+                <div className="h-full flex flex-col items-center justify-center p-8 text-center opacity-30">
+                  <BarChart3 className="w-16 h-16 mb-6 stroke-1" />
+                  <h3 className="font-display text-2xl mb-3 uppercase tracking-widest">Awaiting Analysis</h3>
+                  <p className="font-light max-w-sm leading-relaxed">
+                    Upload your content to reveal virality score, retention breakdown, and expert hooks.
                   </p>
                 </div>
               )}
@@ -395,7 +375,7 @@ export default function Home() {
       </main>
       
       {/* Footer Text */}
-      <div className="relative z-10 py-4 text-center text-xs text-white/30 uppercase tracking-widest font-display">
+      <div className="relative z-10 py-6 text-center text-[10px] text-white/30 uppercase tracking-[0.2em] font-display">
         Generated based on your past 3-month performance, and Creators in your same category.
       </div>
     </div>
