@@ -132,35 +132,35 @@ export default function Home() {
       </div>
 
       {/* Header */}
-      <header className="relative z-10 p-6 flex items-center justify-between border-b border-border backdrop-blur-md bg-background/50">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-foreground text-background flex items-center justify-center font-display font-bold text-xl rounded-sm">B</div>
-          <span className="font-display text-xl tracking-widest uppercase">BackStage</span>
+      <header className="relative z-10 p-4 md:p-6 flex items-center justify-between border-b border-border backdrop-blur-md bg-background/50">
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="w-6 h-6 md:w-8 md:h-8 bg-foreground text-background flex items-center justify-center font-display font-bold text-sm md:text-xl rounded-sm">B</div>
+          <span className="font-display text-lg md:text-xl tracking-widest uppercase">BackStage</span>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="hidden sm:block text-sm text-muted-foreground tracking-wide uppercase font-medium">Hook Stress Testor</div>
+        <div className="flex items-center gap-4 md:gap-6">
+          <div className="hidden sm:block text-xs md:text-sm text-muted-foreground tracking-wide uppercase font-medium">Hook Stress Testor</div>
           <button 
             onClick={toggleTheme}
-            className="w-10 h-10 rounded-full border border-border flex items-center justify-center bg-card hover:bg-secondary transition-colors"
+            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-border flex items-center justify-center bg-card hover:bg-secondary transition-colors"
             title="Toggle theme"
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-foreground" /> : <Moon className="w-4 h-4 text-foreground" />}
+            {theme === 'dark' ? <Sun className="w-3 h-3 md:w-4 md:h-4 text-foreground" /> : <Moon className="w-3 h-3 md:w-4 md:h-4 text-foreground" />}
           </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 flex-1 flex items-center justify-center p-6 md:p-12">
-        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      <main className="relative z-10 flex-1 flex flex-col items-center p-4 md:p-12 overflow-y-auto">
+        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-start h-full">
           
           {/* Left Column: Upload / Preview */}
-          <div className="space-y-8">
-            <div className="space-y-2">
-              <h1 className="text-4xl md:text-5xl font-display uppercase tracking-tight">Dry Run Your Post.</h1>
-              <p className="text-muted-foreground text-lg font-light">Test your hook before it goes live. Stop the scroll.</p>
+          <div className="space-y-4 md:space-y-8 flex-shrink-0">
+            <div className="space-y-1 md:space-y-2 text-center lg:text-left pt-2 md:pt-0">
+              <h1 className="text-3xl md:text-5xl font-display uppercase tracking-tight">Dry Run Your Post.</h1>
+              <p className="text-muted-foreground text-sm md:text-lg font-light">Test your hook before it goes live. Stop the scroll.</p>
             </div>
 
-            <div className="bg-card/30 border border-border rounded-2xl p-6 backdrop-blur-xl relative overflow-hidden shadow-sm">
+            <div className="bg-card/30 border border-border rounded-xl md:rounded-2xl p-4 md:p-6 backdrop-blur-xl relative overflow-hidden shadow-sm">
               <AnimatePresence mode="wait">
                 {!file ? (
                   <motion.div 
@@ -168,16 +168,16 @@ export default function Home() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col items-center justify-center py-20 rounded-xl cursor-pointer hover:bg-secondary/50 border border-transparent hover:border-border transition-all"
+                    className="flex flex-col items-center justify-center py-12 md:py-20 rounded-xl cursor-pointer hover:bg-secondary/50 border border-transparent hover:border-border transition-all"
                     onClick={handleFileClick}
                     data-testid="upload-area"
                   >
-                    <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-6 border border-border">
-                      <Upload className="w-6 h-6 text-foreground/70" />
+                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-secondary flex items-center justify-center mb-4 md:mb-6 border border-border">
+                      <Upload className="w-5 h-5 md:w-6 md:h-6 text-foreground/70" />
                     </div>
-                    <h3 className="font-display text-xl mb-2 tracking-wide uppercase">Upload Content</h3>
-                    <p className="text-muted-foreground text-sm mb-8 text-center max-w-xs font-light">Drop your video or image here, or click to browse files.</p>
-                    <Button variant="outline" className="rounded-full px-8 bg-background">
+                    <h3 className="font-display text-lg md:text-xl mb-1 md:mb-2 tracking-wide uppercase">Upload Content</h3>
+                    <p className="text-muted-foreground text-xs md:text-sm mb-6 md:mb-8 text-center max-w-xs font-light px-4">Drop your video or image here, or click to browse files.</p>
+                    <Button variant="outline" className="rounded-full px-6 md:px-8 bg-background text-xs md:text-sm h-9 md:h-10">
                       Select File
                     </Button>
                     <input 
@@ -194,9 +194,9 @@ export default function Home() {
                     key="preview"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="space-y-6"
+                    className="space-y-4 md:space-y-6"
                   >
-                    <div className="relative aspect-[9/16] max-h-[500px] mx-auto bg-black/10 dark:bg-black/40 rounded-xl overflow-hidden flex items-center justify-center group border border-border shadow-sm">
+                    <div className="relative aspect-[9/16] max-h-[40vh] md:max-h-[500px] mx-auto bg-black/10 dark:bg-black/40 rounded-xl overflow-hidden flex items-center justify-center group border border-border shadow-sm">
                       {previewUrl ? (
                         file?.type.startsWith('video/') ? (
                           <video 
@@ -238,11 +238,11 @@ export default function Home() {
                       )}
                     </div>
 
-                    <div className="space-y-3">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-widest font-display">Caption</label>
+                    <div className="space-y-2 md:space-y-3">
+                      <label className="text-[10px] md:text-xs font-medium text-muted-foreground uppercase tracking-widest font-display">Caption</label>
                       <textarea 
-                        className="w-full bg-transparent border-b border-border p-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none font-light text-sm transition-colors"
-                        rows={4}
+                        className="w-full bg-transparent border-b border-border p-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none font-light text-xs md:text-sm transition-colors"
+                        rows={3}
                         placeholder="Write your post caption here..."
                         value={caption}
                         onChange={(e) => setCaption(e.target.value)}
@@ -252,10 +252,10 @@ export default function Home() {
                     </div>
 
                     {!analysis && (
-                      <div className="pt-4">
+                      <div className="pt-2 md:pt-4">
                         {isUploading ? (
-                          <div className="space-y-4">
-                            <div className="flex justify-between text-xs font-display uppercase tracking-widest text-muted-foreground">
+                          <div className="space-y-3 md:space-y-4">
+                            <div className="flex justify-between text-[10px] md:text-xs font-display uppercase tracking-widest text-muted-foreground">
                               <span className="animate-pulse">Analyzing Hook...</span>
                               <span>{progress}%</span>
                             </div>
@@ -263,7 +263,7 @@ export default function Home() {
                           </div>
                         ) : (
                           <Button 
-                            className="w-full py-6 text-sm font-display uppercase tracking-widest bg-foreground text-background hover:bg-foreground/90 rounded-none shadow-md"
+                            className="w-full py-4 md:py-6 text-xs md:text-sm font-display uppercase tracking-widest bg-foreground text-background hover:bg-foreground/90 rounded-none shadow-md"
                             onClick={handleAnalyze}
                             data-testid="btn-analyze"
                           >
@@ -279,62 +279,62 @@ export default function Home() {
           </div>
 
           {/* Right Column: Analysis Results */}
-          <div className="h-full">
+          <div className="h-full flex flex-col lg:h-auto w-full pb-8 md:pb-0">
             <AnimatePresence mode="wait">
               {analysis ? (
                 <motion.div
                   key="results"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="h-full flex flex-col relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="h-full flex flex-col relative bg-card/5 lg:bg-transparent border lg:border-none border-border rounded-xl md:rounded-none p-4 md:p-0"
                   data-testid="analysis-results"
                 >
-                  <div className="flex items-end justify-between mb-8 pb-6 border-b border-border">
+                  <div className="flex flex-col-reverse md:flex-row md:items-end justify-between gap-4 md:gap-0 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-border">
                     <div>
-                      <h2 className="font-display font-medium text-3xl uppercase tracking-wider mb-2 text-foreground">Analysis</h2>
-                      <div className="text-muted-foreground text-sm font-light leading-relaxed max-w-sm">
+                      <h2 className="font-display font-medium text-xl md:text-3xl uppercase tracking-wider mb-1 md:mb-2 text-foreground">Analysis</h2>
+                      <div className="text-muted-foreground text-xs md:text-sm font-light leading-relaxed max-w-sm line-clamp-2 md:line-clamp-none">
                         {analysis.summary}
                       </div>
                     </div>
                     
-                    <div className="flex flex-col items-end">
-                      <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2 font-display">Virality Score</div>
-                      <div className={`text-7xl font-display font-light leading-none tracking-tighter ${getScoreColor(analysis.score)}`}>
+                    <div className="flex flex-col items-start md:items-end">
+                      <div className="text-[10px] md:text-xs uppercase tracking-widest text-muted-foreground mb-1 md:mb-2 font-display">Virality Score</div>
+                      <div className={`text-5xl md:text-7xl font-display font-light leading-none tracking-tighter ${getScoreColor(analysis.score)}`}>
                         {analysis.score}
-                        <span className="text-3xl text-muted-foreground/50">/100</span>
+                        <span className="text-2xl md:text-3xl text-muted-foreground/50">/100</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4 mb-8 text-center">
-                    <div className="bg-card/50 border border-border rounded-lg p-3">
-                      <div className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Category</div>
-                      <div className="font-medium text-sm">{analysis.category}</div>
+                  <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-8 text-center">
+                    <div className="bg-card/50 border border-border rounded-lg p-2 md:p-3">
+                      <div className="text-[8px] md:text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Category</div>
+                      <div className="font-medium text-xs md:text-sm truncate px-1">{analysis.category}</div>
                     </div>
-                    <div className="bg-card/50 border border-border rounded-lg p-3">
-                      <div className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Format</div>
-                      <div className="font-medium text-sm">{analysis.format}</div>
+                    <div className="bg-card/50 border border-border rounded-lg p-2 md:p-3">
+                      <div className="text-[8px] md:text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Format</div>
+                      <div className="font-medium text-xs md:text-sm">{analysis.format}</div>
                     </div>
-                    <div className="bg-card/50 border border-border rounded-lg p-3">
-                      <div className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Length</div>
-                      <div className="font-medium text-sm">{analysis.length}</div>
+                    <div className="bg-card/50 border border-border rounded-lg p-2 md:p-3">
+                      <div className="text-[8px] md:text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Length</div>
+                      <div className="font-medium text-xs md:text-sm">{analysis.length}</div>
                     </div>
                   </div>
 
-                  <div className="space-y-8 flex-1 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+                  <div className="space-y-6 md:space-y-8 flex-1 overflow-y-visible md:overflow-y-auto md:pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6">
                       {/* Good Column */}
                       <div>
-                        <div className="flex items-center gap-2 mb-4">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-                          <h3 className="font-display font-medium text-base uppercase tracking-wider text-foreground">What's Working Well</h3>
+                        <div className="flex items-center gap-2 mb-3 md:mb-4">
+                          <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-emerald-500 dark:text-emerald-400" />
+                          <h3 className="font-display font-medium text-sm md:text-base uppercase tracking-wider text-foreground">What's Working Well</h3>
                         </div>
-                        <div className="space-y-3">
+                        <div className="space-y-2 md:space-y-3">
                           {analysis.good.map((item, i) => (
-                            <div key={i} className="text-foreground/80 font-light flex items-start gap-3">
+                            <div key={i} className="text-foreground/80 font-light flex items-start gap-2 md:gap-3">
                               <span className="mt-1.5 w-1 h-1 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0" />
-                              <span className="leading-snug text-sm">{item}</span>
+                              <span className="leading-snug text-xs md:text-sm">{item}</span>
                             </div>
                           ))}
                         </div>
@@ -342,33 +342,33 @@ export default function Home() {
                       
                       {/* Bad Column */}
                       <div>
-                        <div className="flex items-center gap-2 mb-4">
-                          <XCircle className="w-4 h-4 text-muted-foreground" />
-                          <h3 className="font-display font-medium text-base uppercase tracking-wider text-foreground">Areas to Improve</h3>
+                        <div className="flex items-center gap-2 mb-3 md:mb-4">
+                          <XCircle className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
+                          <h3 className="font-display font-medium text-sm md:text-base uppercase tracking-wider text-foreground">Areas to Improve</h3>
                         </div>
-                        <div className="space-y-3">
+                        <div className="space-y-2 md:space-y-3">
                           {analysis.bad.map((item, i) => (
-                            <div key={i} className="text-foreground/70 font-light flex items-start gap-3">
+                            <div key={i} className="text-foreground/70 font-light flex items-start gap-2 md:gap-3">
                               <span className="mt-1.5 w-1 h-1 rounded-full bg-border shrink-0" />
-                              <span className="leading-snug text-sm">{item}</span>
+                              <span className="leading-snug text-xs md:text-sm">{item}</span>
                             </div>
                           ))}
                         </div>
                       </div>
                     </div>
 
-                    <div className="pt-6 border-t border-border">
-                      <div className="flex items-center gap-2 mb-4">
-                        <AlertCircle className="w-4 h-4 text-accent dark:text-accent" />
-                        <h3 className="font-display font-medium text-base uppercase tracking-wider text-foreground">Pro Tips for Next Time</h3>
+                    <div className="pt-4 md:pt-6 border-t border-border">
+                      <div className="flex items-center gap-2 mb-3 md:mb-4">
+                        <AlertCircle className="w-3 h-3 md:w-4 md:h-4 text-accent dark:text-accent" />
+                        <h3 className="font-display font-medium text-sm md:text-base uppercase tracking-wider text-foreground">Pro Tips for Next Time</h3>
                       </div>
-                      <div className="space-y-3">
+                      <div className="space-y-2 md:space-y-3">
                         {analysis.tips.map((tip, i) => (
-                          <div key={i} className="text-foreground/80 font-light flex items-start gap-3">
-                            <span className="mt-0.5 w-5 h-5 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs shrink-0 font-medium">
+                          <div key={i} className="text-foreground/80 font-light flex items-start gap-2 md:gap-3">
+                            <span className="mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded-full bg-accent/10 text-accent flex items-center justify-center text-[10px] md:text-xs shrink-0 font-medium">
                               {i + 1}
                             </span>
-                            <span className="leading-snug text-sm">{tip}</span>
+                            <span className="leading-snug text-xs md:text-sm">{tip}</span>
                           </div>
                         ))}
                       </div>
@@ -376,20 +376,20 @@ export default function Home() {
 
                   </div>
 
-                  <div className="mt-8 pt-8 flex items-center justify-between border-t border-border">
-                    <button className="text-xs uppercase tracking-widest font-display text-muted-foreground hover:text-foreground transition-colors" onClick={reset}>
-                      Test Another Post
+                  <div className="mt-6 md:mt-8 pt-4 md:pt-8 flex items-center justify-between border-t border-border">
+                    <button className="text-[10px] md:text-xs uppercase tracking-widest font-display text-muted-foreground hover:text-foreground transition-colors" onClick={reset}>
+                      Test Another
                     </button>
-                    <button className="flex items-center gap-2 text-xs uppercase tracking-widest font-display text-foreground hover:text-foreground/80 transition-colors group">
-                      Export Report <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <button className="flex items-center gap-1 md:gap-2 text-[10px] md:text-xs uppercase tracking-widest font-display text-foreground hover:text-foreground/80 transition-colors group">
+                      Export Report <ChevronRight className="w-3 h-3 md:w-4 md:h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
                 </motion.div>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center p-8 text-center opacity-40">
-                  <BarChart3 className="w-16 h-16 mb-6 stroke-1 text-foreground" />
-                  <h3 className="font-display text-2xl mb-3 uppercase tracking-widest text-foreground">Awaiting Analysis</h3>
-                  <p className="font-light max-w-sm leading-relaxed text-foreground">
+                <div className="h-[30vh] lg:h-full flex flex-col items-center justify-center p-4 md:p-8 text-center opacity-40">
+                  <BarChart3 className="w-10 h-10 md:w-16 md:h-16 mb-4 md:mb-6 stroke-1 text-foreground" />
+                  <h3 className="font-display text-lg md:text-2xl mb-2 md:mb-3 uppercase tracking-widest text-foreground">Awaiting Analysis</h3>
+                  <p className="font-light max-w-sm leading-relaxed text-foreground text-xs md:text-base px-4">
                     Upload your content to reveal virality score, retention breakdown, and expert hooks.
                   </p>
                 </div>
@@ -401,7 +401,7 @@ export default function Home() {
       </main>
       
       {/* Footer Text */}
-      <div className="relative z-10 py-6 text-center text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-display">
+      <div className="relative z-10 py-3 md:py-6 text-center text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-display flex-shrink-0 bg-background/80 backdrop-blur-sm">
         Generated based on your past 3-month performance, and Creators in your same category.
       </div>
     </div>
