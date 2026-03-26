@@ -20,25 +20,26 @@ type AnalysisResult = {
 };
 
 const MOCK_ANALYSIS: AnalysisResult = {
-  score: 94,
+  score: 72,
   topic: "Celebrity Salon Hair Transformation",
   category: "Beauty & Lifestyle",
-  summary: "A highly engaging vlog-style transformation at a premium Korean hair salon. The video excellently showcases the full experience from entry to final results, maintaining viewer interest through fast-paced cuts and clear visual progression.",
+  summary: "A solid vlog-style transformation at a premium Korean hair salon. The video captures the experience well, but the pacing drags in the middle, and the initial hook could be stronger to improve retention.",
   format: "Video",
   length: "52s",
   good: [
-    "The opening immediately sets a high-end, aspirational vibe that stops the scroll.",
-    "Fast-paced progression from scalp diagnosis to styling keeps retention high.",
-    "The final reveal is striking, aspirational, and highly shareable.",
-    "Tagging the specific stylist and location drives high engagement and saves."
+    "The high-end aesthetic is immediately appealing and fits the beauty niche perfectly.",
+    "The final reveal is striking and clearly demonstrates the value of the service.",
+    "Tagging the specific stylist and location is great for searchability and saves."
   ],
   bad: [
-    "The text overlays in the middle section could be slightly shorter for easier reading.",
-    "The transition around the 15s mark is slightly jarring."
+    "The first 3 seconds lack a strong verbal or visual hook to immediately grab attention.",
+    "The scalp diagnosis section is too long and slows down the overall pacing.",
+    "The text overlays in the middle are slightly too wordy for fast reading."
   ],
   tips: [
-    "Condense the text overlays into punchy, 3-4 word phrases.",
-    "Add a clear Call-To-Action (CTA) at the end encouraging viewers to save the video for their next trip to Korea."
+    "Add a bold text hook like 'The ultimate K-Beauty hair transformation' in the first frame.",
+    "Trim the scalp diagnosis section by 5 seconds to keep the momentum going.",
+    "Condense the text overlays into punchy, 3-4 word phrases."
   ]
 };
 
