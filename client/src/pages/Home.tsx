@@ -20,26 +20,26 @@ type AnalysisResult = {
 };
 
 const MOCK_ANALYSIS: AnalysisResult = {
-  score: 72,
+  score: 94,
   topic: "Celebrity Salon Hair Transformation",
   category: "Beauty & Lifestyle",
-  summary: "A solid vlog-style transformation at a premium Korean hair salon. The video captures the experience well, but the pacing drags in the middle, and the initial hook could be stronger to improve retention.",
+  summary: "An incredibly engaging vlog-style transformation at a premium Korean hair salon. The pacing is snappy, the hooks are immediately captivating, and the final reveal drives strong viewer satisfaction and re-watchability.",
   format: "Video",
   length: "52s",
   good: [
-    "The high-end aesthetic is immediately appealing and fits the beauty niche perfectly.",
-    "The final reveal is striking and clearly demonstrates the value of the service.",
-    "Tagging the specific stylist and location is great for searchability and saves."
+    "The first 3 seconds hook the viewer instantly with a bold visual change and fast motion.",
+    "The pacing is perfect, keeping the viewer engaged through the entire process without dragging.",
+    "The final reveal is striking, clearly demonstrates value, and encourages shares and saves."
   ],
   bad: [
-    "The first 3 seconds lack a strong verbal or visual hook to immediately grab attention.",
-    "The scalp diagnosis section is too long and slows down the overall pacing.",
-    "The text overlays in the middle are slightly too wordy for fast reading."
+    "The music could be slightly louder during the transformation montage to build more excitement.",
+    "A few of the text overlays fade out a bit too quickly for slower readers.",
+    "The final call-to-action could be more direct about saving the video for future reference."
   ],
   tips: [
-    "Add a bold text hook like 'The ultimate K-Beauty hair transformation' in the first frame.",
-    "Trim the scalp diagnosis section by 5 seconds to keep the momentum going.",
-    "Condense the text overlays into punchy, 3-4 word phrases."
+    "Increase audio levels by 10-15% during the high-energy transformation sequence.",
+    "Extend the duration of text overlays by 0.5 seconds.",
+    "Add a clear verbal or visual CTA at the end like 'Save this for your next trip to Seoul!'."
   ]
 };
 
