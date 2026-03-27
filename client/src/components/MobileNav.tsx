@@ -1,4 +1,4 @@
-import { Home, Users, MonitorCheck, User } from "lucide-react";
+import { Home, MessagesSquare, MonitorCheck, User } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function MobileNav() {
@@ -16,7 +16,7 @@ export default function MobileNav() {
         <button 
           className={`transition-all duration-300 flex items-center justify-center w-[4.5rem] h-12 rounded-2xl text-muted-foreground hover:text-foreground hover:bg-secondary/50`}
         >
-          <Users className="w-6 h-6" strokeWidth={1.5} />
+          <MessagesSquare className="w-6 h-6" strokeWidth={1.5} />
         </button>
         <button 
           onClick={() => setLocation('/pricing')}
