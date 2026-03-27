@@ -56,10 +56,10 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch pt-8">
           
           {/* Free Tier */}
-          <div className="bg-card/30 border border-border rounded-2xl p-8 backdrop-blur-sm flex flex-col hover:border-foreground/20 transition-colors shadow-sm">
+          <div className="bg-card/30 border border-border rounded-2xl p-8 backdrop-blur-sm flex flex-col relative transition-colors shadow-sm hover:border-foreground/20">
             <div className="mb-8">
               <h3 className="font-display text-xl uppercase tracking-wider mb-2">BackStage Free</h3>
               <div className="text-3xl font-display font-medium mb-2">$0 <span className="text-sm text-muted-foreground font-sans font-light">/ forever</span></div>
@@ -81,13 +81,13 @@ export default function Pricing() {
               </li>
             </ul>
             
-            <Button variant="outline" className="w-full rounded-full bg-transparent border-border hover:bg-secondary">
+            <Button variant="outline" className="w-full rounded-full bg-transparent border-border hover:bg-secondary mt-auto">
               Start Free
             </Button>
           </div>
 
           {/* Basic Tier */}
-          <div className="bg-card/30 border border-border rounded-2xl p-8 backdrop-blur-sm flex flex-col hover:border-foreground/20 transition-colors relative overflow-hidden shadow-sm">
+          <div className="bg-card/30 border border-border rounded-2xl p-8 backdrop-blur-sm flex flex-col relative transition-colors shadow-sm hover:border-foreground/20">
             <div className="mb-8 relative z-10">
               <h3 className="font-display text-xl uppercase tracking-wider mb-2">Creator</h3>
               <div className="text-3xl font-display font-medium mb-2">$9 <span className="text-sm text-muted-foreground font-sans font-light">/ month</span></div>
@@ -109,21 +109,20 @@ export default function Pricing() {
               </li>
             </ul>
             
-            <Button variant="outline" className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 relative z-10 border-transparent shadow-sm">
+            <Button variant="outline" className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 relative z-10 border-transparent shadow-sm mt-auto">
               Upgrade to Creator
             </Button>
           </div>
 
           {/* Plus Tier - Highlighted */}
-          <div className="bg-card/80 border border-accent rounded-2xl p-8 backdrop-blur-md flex flex-col relative overflow-hidden shadow-[0_0_30px_-10px_rgba(234,255,0,0.3)] dark:shadow-[0_0_40px_-15px_rgba(234,255,0,0.15)] transform md:-translate-y-4">
-            <div className="absolute top-0 inset-x-0 h-1 bg-accent" />
-            <div className="absolute top-4 right-4 bg-accent text-[#1a1a1a] text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full font-bold flex items-center gap-1 shadow-sm">
+          <div className="bg-card/80 border border-accent rounded-2xl p-8 backdrop-blur-md flex flex-col relative shadow-[0_0_30px_-10px_rgba(234,255,0,0.3)] dark:shadow-[0_0_40px_-15px_rgba(234,255,0,0.15)]">
+            <div className="absolute top-0 right-6 -translate-y-1/2 bg-accent text-[#1a1a1a] text-[10px] uppercase tracking-widest px-4 py-1.5 rounded-full font-bold flex items-center gap-1 shadow-sm z-20 whitespace-nowrap">
               <Star className="w-3 h-3 fill-[#1a1a1a]" /> Most Popular
             </div>
             
             <div className="mb-8 relative z-10">
               <h3 className="font-display text-xl uppercase tracking-wider mb-2">Influencer</h3>
-              <div className="text-4xl font-display font-medium mb-2 text-foreground">$29 <span className="text-sm text-muted-foreground font-sans font-light">/ month</span></div>
+              <div className="text-3xl font-display font-medium mb-2 text-foreground">$29 <span className="text-sm text-muted-foreground font-sans font-light">/ month</span></div>
               <p className="text-sm text-muted-foreground font-light">Grow your audience faster.</p>
             </div>
             
@@ -146,13 +145,13 @@ export default function Pricing() {
               </li>
             </ul>
             
-            <Button className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent/90 relative z-10 border-transparent font-medium shadow-[0_0_20px_-5px_rgba(234,255,0,0.4)]">
+            <Button className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent/90 relative z-10 border-transparent font-medium shadow-[0_0_20px_-5px_rgba(234,255,0,0.4)] mt-auto">
               Get Influencer
             </Button>
           </div>
 
           {/* Premium Tier */}
-          <div className="bg-card/30 border border-border rounded-2xl p-8 backdrop-blur-sm flex flex-col hover:border-foreground/20 transition-colors shadow-sm">
+          <div className="bg-card/30 border border-border rounded-2xl p-8 backdrop-blur-sm flex flex-col relative transition-colors shadow-sm hover:border-foreground/20">
             <div className="mb-8">
               <h3 className="font-display text-xl uppercase tracking-wider mb-2">Agency</h3>
               <div className="text-3xl font-display font-medium mb-2">$99 <span className="text-sm text-muted-foreground font-sans font-light">/ month</span></div>
@@ -178,7 +177,7 @@ export default function Pricing() {
               </li>
             </ul>
             
-            <Button variant="outline" className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 border-transparent shadow-sm">
+            <Button variant="outline" className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90 border-transparent shadow-sm mt-auto">
               Upgrade to Agency
             </Button>
           </div>
