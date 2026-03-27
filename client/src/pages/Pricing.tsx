@@ -52,7 +52,7 @@ export default function Pricing() {
         <div className="text-center mb-16 space-y-4">
           <h1 className="text-4xl md:text-6xl font-display uppercase tracking-tight">Stop Scrolling.<br/>Start Converting.</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-light">
-            Choose the plan that fits your content strategy. Test your hooks, boost retention, and go viral.
+            Choose the plan that fits your content strategy. Test your hooks, boost retention, and publish with confidence.
           </p>
         </div>
 
@@ -62,14 +62,14 @@ export default function Pricing() {
           <div className="bg-card/30 border border-border rounded-2xl p-8 backdrop-blur-sm flex flex-col hover:border-foreground/20 transition-colors shadow-sm">
             <div className="mb-8">
               <h3 className="font-display text-xl uppercase tracking-wider mb-2">BackStage Free</h3>
-              <div className="text-3xl font-display font-medium mb-2">$0<span className="text-sm text-muted-foreground font-sans font-light">/forever</span></div>
+              <div className="text-3xl font-display font-medium mb-2">$0 <span className="text-sm text-muted-foreground font-sans font-light">/ forever</span></div>
               <p className="text-sm text-muted-foreground font-light">Perfect for getting started.</p>
             </div>
             
             <ul className="space-y-4 mb-8 flex-1">
               <li className="flex items-start gap-3 text-sm font-light">
                 <Check className="w-4 h-4 text-foreground/50 shrink-0 mt-0.5" />
-                <span>10 Hook Tests total</span>
+                <span>10 Hook Tests (total)</span>
               </li>
               <li className="flex items-start gap-3 text-sm font-light">
                 <Check className="w-4 h-4 text-foreground/50 shrink-0 mt-0.5" />
@@ -77,7 +77,7 @@ export default function Pricing() {
               </li>
               <li className="flex items-start gap-3 text-sm font-light text-muted-foreground">
                 <Check className="w-4 h-4 opacity-50 shrink-0 mt-0.5" />
-                <span>Standard pacing analysis</span>
+                <span>Standard Pacing Analysis</span>
               </li>
             </ul>
             
@@ -90,7 +90,7 @@ export default function Pricing() {
           <div className="bg-card/30 border border-border rounded-2xl p-8 backdrop-blur-sm flex flex-col hover:border-foreground/20 transition-colors relative overflow-hidden shadow-sm">
             <div className="mb-8 relative z-10">
               <h3 className="font-display text-xl uppercase tracking-wider mb-2">Creator</h3>
-              <div className="text-3xl font-display font-medium mb-2">$9<span className="text-sm text-muted-foreground font-sans font-light">/mo</span></div>
+              <div className="text-3xl font-display font-medium mb-2">$9 <span className="text-sm text-muted-foreground font-sans font-light">/ month</span></div>
               <p className="text-sm text-muted-foreground font-light">For the consistent poster.</p>
             </div>
             
@@ -101,11 +101,11 @@ export default function Pricing() {
               </li>
               <li className="flex items-start gap-3 text-sm font-light">
                 <Check className="w-4 h-4 text-foreground shrink-0 mt-0.5" />
-                <span>Advanced pacing insights</span>
+                <span>Advanced Pacing Insights</span>
               </li>
               <li className="flex items-start gap-3 text-sm font-light">
                 <Check className="w-4 h-4 text-foreground shrink-0 mt-0.5" />
-                <span>Caption optimization</span>
+                <span>Caption Optimization</span>
               </li>
             </ul>
             
@@ -123,7 +123,7 @@ export default function Pricing() {
             
             <div className="mb-8 relative z-10">
               <h3 className="font-display text-xl uppercase tracking-wider mb-2">Influencer</h3>
-              <div className="text-4xl font-display font-medium mb-2 text-foreground">$29<span className="text-sm text-muted-foreground font-sans font-light">/mo</span></div>
+              <div className="text-4xl font-display font-medium mb-2 text-foreground">$29 <span className="text-sm text-muted-foreground font-sans font-light">/ month</span></div>
               <p className="text-sm text-muted-foreground font-light">Grow your audience faster.</p>
             </div>
             
@@ -134,15 +134,15 @@ export default function Pricing() {
               </li>
               <li className="flex items-start gap-3 text-sm font-light">
                 <Check className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                <span>Deep competitor benchmarking</span>
+                <span>Deep Competitor Benchmarking</span>
               </li>
               <li className="flex items-start gap-3 text-sm font-light">
                 <Check className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                <span>A/B test up to 3 hooks</span>
+                <span>A/B Test up to 3 Hooks</span>
               </li>
               <li className="flex items-start gap-3 text-sm font-light">
                 <Check className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                <span>Trend forecasting alerts</span>
+                <span>Trend Forecasting Alerts</span>
               </li>
             </ul>
             
@@ -155,7 +155,7 @@ export default function Pricing() {
           <div className="bg-card/30 border border-border rounded-2xl p-8 backdrop-blur-sm flex flex-col hover:border-foreground/20 transition-colors shadow-sm">
             <div className="mb-8">
               <h3 className="font-display text-xl uppercase tracking-wider mb-2">Agency</h3>
-              <div className="text-3xl font-display font-medium mb-2">$99<span className="text-sm text-muted-foreground font-sans font-light">/mo</span></div>
+              <div className="text-3xl font-display font-medium mb-2">$99 <span className="text-sm text-muted-foreground font-sans font-light">/ month</span></div>
               <p className="text-sm text-muted-foreground font-light">For teams managing multiple accounts.</p>
             </div>
             
@@ -170,7 +170,7 @@ export default function Pricing() {
               </li>
               <li className="flex items-start gap-3 text-sm font-light">
                 <Check className="w-4 h-4 text-foreground shrink-0 mt-0.5" />
-                <span>White-label PDF Reports</span>
+                <span>White-Label PDF Reports</span>
               </li>
               <li className="flex items-start gap-3 text-sm font-light">
                 <Check className="w-4 h-4 text-foreground shrink-0 mt-0.5" />
