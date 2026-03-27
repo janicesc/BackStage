@@ -117,8 +117,8 @@ export default function Pricing() {
           {/* Plus Tier - Highlighted */}
           <div className="bg-card/80 border border-accent rounded-2xl p-8 backdrop-blur-md flex flex-col relative overflow-hidden shadow-[0_0_30px_-10px_rgba(234,255,0,0.3)] dark:shadow-[0_0_40px_-15px_rgba(234,255,0,0.15)] transform md:-translate-y-4">
             <div className="absolute top-0 inset-x-0 h-1 bg-accent" />
-            <div className="absolute top-4 right-4 bg-accent/20 text-accent text-[10px] uppercase tracking-widest px-2 py-1 rounded font-medium flex items-center gap-1">
-              <Star className="w-3 h-3 fill-current" /> Most Popular
+            <div className="absolute top-4 right-4 bg-accent text-[#1a1a1a] text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full font-bold flex items-center gap-1 shadow-sm">
+              <Star className="w-3 h-3 fill-[#1a1a1a]" /> Most Popular
             </div>
             
             <div className="mb-8 relative z-10">
