@@ -394,13 +394,7 @@ export default function Home() {
                   </div>
                 </motion.div>
               ) : (
-                <div className="h-[30vh] lg:h-full flex flex-col items-center justify-center p-4 md:p-8 text-center opacity-40">
-                  <BarChart3 className="w-10 h-10 md:w-16 md:h-16 mb-4 md:mb-6 stroke-1 text-foreground" />
-                  <h3 className="font-display text-lg md:text-2xl mb-2 md:mb-3 uppercase tracking-widest text-foreground">Awaiting Analysis</h3>
-                  <p className="font-light max-w-sm leading-relaxed text-foreground text-xs md:text-base px-4">
-                    Upload your content to reveal virality score, retention breakdown, and expert hooks.
-                  </p>
-                </div>
+                <div className="h-[30vh] lg:h-full"></div>
               )}
             </AnimatePresence>
           </div>
