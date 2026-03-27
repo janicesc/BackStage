@@ -121,7 +121,7 @@ export default function Pricing() {
               <Star className="w-3 h-3 fill-[#1a1a1a]" /> Most Popular
             </div>
             
-            <div className="mb-8 mt-12 relative z-10">
+            <div className="mb-8 relative z-10">
               <h3 className="font-display text-xl uppercase tracking-wider mb-2">Influencer</h3>
               <div className="text-4xl font-display font-medium mb-2 text-foreground">$29 <span className="text-sm text-muted-foreground font-sans font-light">/ month</span></div>
               <p className="text-sm text-muted-foreground font-light">Grow your audience faster.</p>
