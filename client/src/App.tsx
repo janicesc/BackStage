@@ -6,15 +6,19 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Pricing from "@/pages/Pricing";
+import MobileNav from "@/components/MobileNav";
 import { useState, useEffect } from "react";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home}/>
-      <Route path="/pricing" component={Pricing}/>
-      <Route component={NotFound} />
-    </Switch>
+    <div className="pb-24 md:pb-0 min-h-screen flex flex-col">
+      <Switch>
+        <Route path="/" component={Home}/>
+        <Route path="/pricing" component={Pricing}/>
+        <Route component={NotFound} />
+      </Switch>
+      <MobileNav />
+    </div>
   );
 }
 
