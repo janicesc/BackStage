@@ -64,7 +64,14 @@ export default function Home() {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(t => t === 'dark' ? 'light' : 'dark');
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', newTheme);
   };
 
   const handleFileClick = () => {
@@ -134,12 +141,12 @@ export default function Home() {
 
       {/* Header */}
       <header className="relative z-10 p-4 md:p-6 flex items-center justify-between border-b border-border backdrop-blur-md bg-background/50">
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-2 md:gap-3 cursor-pointer" onClick={() => window.location.href = '/'}>
           <div className="w-6 h-6 md:w-8 md:h-8 bg-foreground text-background flex items-center justify-center font-display font-bold text-sm md:text-xl rounded-sm">B</div>
           <span className="font-display text-lg md:text-xl tracking-widest uppercase">BackStage</span>
         </div>
         <div className="flex items-center gap-4 md:gap-6">
-          <div className="hidden sm:block text-xs md:text-sm text-muted-foreground tracking-wide uppercase font-medium">Hook Stress Testor</div>
+          <div className="hidden sm:block text-xs md:text-sm text-muted-foreground tracking-wide uppercase font-medium cursor-pointer hover:text-foreground transition-colors" onClick={() => window.location.href = '/pricing'}>Pricing</div>
           <button 
             onClick={toggleTheme}
             className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-border flex items-center justify-center bg-card hover:bg-secondary transition-colors"
