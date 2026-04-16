@@ -9,6 +9,7 @@ import bgImage from "@assets/image_1772140166769.png";
 
 type AnalysisResult = {
   score: number;
+  verdict: string;
   topic: string;
   category: string;
   summary: string;
@@ -17,29 +18,35 @@ type AnalysisResult = {
   good: string[];
   bad: string[];
   tips: string[];
+  benchmarks: { text: string; views: string }[];
 };
 
 const MOCK_ANALYSIS: AnalysisResult = {
-  score: 94,
-  topic: "Celebrity Salon Hair Transformation",
-  category: "Beauty & Lifestyle",
+  score: 85,
+  verdict: "Strong hook — ready to post",
+  topic: "Gaming Stream Drama",
+  category: "Gaming",
   summary: "An incredibly engaging vlog-style transformation at a premium Korean hair salon. The pacing is snappy, the hooks are immediately captivating, and the final reveal drives strong viewer satisfaction and re-watchability.",
   format: "Video",
   length: "52s",
   good: [
-    "The first 3 seconds hook the viewer instantly with a bold visual change and fast motion.",
-    "The pacing is perfect, keeping the viewer engaged through the entire process without dragging.",
-    "The final reveal is striking, clearly demonstrates value, and encourages shares and saves."
+    "Open loop is airtight — \"something just went wrong\" withholds the payoff and forces completion.",
+    "\"72 hours\" is a specific number that signals authenticity — outperforms vague claims with Gen Z audiences.",
+    "Matches the 2026 raw content trend — unfiltered, high-stakes streaming drama is peaking in Gaming right now."
   ],
   bad: [
-    "The music could be slightly louder during the transformation montage to build more excitement.",
-    "A few of the text overlays fade out a bit too quickly for slower readers.",
-    "The final call-to-action could be more direct about saving the video for future reference."
+    "\"Something went wrong\" is vague — hinting at the type of problem (a ban, gear failure, health scare) would sharpen the hook further.",
+    "High drop-off risk if your opening frame doesn't match the energy of this hook — you need an immediate visual payoff in the first 2 seconds."
   ],
   tips: [
-    "Increase audio levels by 10-15% during the high-energy transformation sequence.",
-    "Extend the duration of text overlays by 0.5 seconds.",
-    "Add a clear verbal or visual CTA at the end like 'Save this for your next trip to Seoul!'."
+    "Add one specific detail — try: \"…and my stream just got permanently banned.\" Specificity drives 30–40% higher retention in Gaming content.",
+    "Open on your reaction face, not the setup — your expression in the first frame should match the stakes of the hook.",
+    "Test a POV version: \"POV: hour 72 of my stream and everything just fell apart\" — POV format is outperforming standard hooks in Gaming TikTok this week."
+  ],
+  benchmarks: [
+    { text: "\"Chat told me to do this and I actually did it…\"", views: "4.2M views" },
+    { text: "\"I haven't slept in 3 days because of this game\"", views: "3.8M views" },
+    { text: "\"My Twitch chat just changed my life by accident\"", views: "2.9M views" }
   ]
 };
 
@@ -293,89 +300,151 @@ export default function Home() {
                   key="results"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="h-full flex flex-col relative bg-card/5 lg:bg-transparent border lg:border-none border-border rounded-xl md:rounded-none p-4 md:p-0"
+                  className="h-full flex flex-col relative bg-[#0f0f0f]/95 border border-border/40 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-2xl max-w-[600px] mx-auto w-full"
                   data-testid="analysis-results"
                 >
-                  <div className="flex flex-col-reverse md:flex-row md:items-end justify-between gap-4 md:gap-0 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-border">
+                  {/* Hero Section */}
+                  <div className="flex flex-col-reverse md:flex-row md:items-start justify-between gap-6 md:gap-4 mb-8">
+                    <div className="flex-1">
+                      <div className="text-[11px] font-medium tracking-[0.1em] uppercase text-muted-foreground mb-3 font-display">Hook analysis</div>
+                      <div className="text-[15px] text-muted-foreground/90 italic border-l-2 border-border/60 pl-3 leading-relaxed mb-4">
+                        "{hookText || "I've been streaming for 72 hours straight and something just went wrong…"}"
+                      </div>
+                      <div className="inline-flex items-center text-[13px] font-medium text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full">
+                        {analysis.verdict}
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col items-start md:items-end flex-shrink-0">
+                      <div className="text-[10px] tracking-[0.1em] uppercase text-muted-foreground mb-1 font-display">Virality Score</div>
+                      <div className="flex items-baseline">
+                        <span className={`text-[64px] font-medium leading-none tracking-tight ${getScoreColor(analysis.score)}`}>
+                          {analysis.score}
+                        </span>
+                        <span className="text-[20px] text-muted-foreground/60 ml-1">/100</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Score Bars */}
+                  <div className="flex flex-col gap-3 mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="text-xs text-muted-foreground w-[120px] flex-shrink-0">Curiosity gap</div>
+                      <div className="flex-1 h-1.5 bg-border/40 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-400 rounded-full" style={{ width: '90%' }}></div>
+                      </div>
+                      <div className="text-[11px] text-muted-foreground w-6 text-right flex-shrink-0">90</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-xs text-muted-foreground w-[120px] flex-shrink-0">Emotional stakes</div>
+                      <div className="flex-1 h-1.5 bg-border/40 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-400 rounded-full" style={{ width: '82%' }}></div>
+                      </div>
+                      <div className="text-[11px] text-muted-foreground w-6 text-right flex-shrink-0">82</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-xs text-muted-foreground w-[120px] flex-shrink-0">Trend alignment</div>
+                      <div className="flex-1 h-1.5 bg-border/40 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-400 rounded-full" style={{ width: '88%' }}></div>
+                      </div>
+                      <div className="text-[11px] text-muted-foreground w-6 text-right flex-shrink-0">88</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-xs text-muted-foreground w-[120px] flex-shrink-0">Pacing & rhythm</div>
+                      <div className="flex-1 h-1.5 bg-border/40 rounded-full overflow-hidden">
+                        <div className="h-full bg-amber-400 rounded-full" style={{ width: '75%' }}></div>
+                      </div>
+                      <div className="text-[11px] text-muted-foreground w-6 text-right flex-shrink-0">75</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-xs text-muted-foreground w-[120px] flex-shrink-0">Specificity</div>
+                      <div className="flex-1 h-1.5 bg-border/40 rounded-full overflow-hidden">
+                        <div className="h-full bg-amber-400 rounded-full" style={{ width: '58%' }}></div>
+                      </div>
+                      <div className="text-[11px] text-muted-foreground w-6 text-right flex-shrink-0">58</div>
+                    </div>
+                  </div>
+
+                  <hr className="border-t border-border/40 my-6" />
+
+                  <div className="space-y-8 flex-1 overflow-y-visible md:overflow-y-auto md:pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+                    
+                    {/* What's Working */}
                     <div>
-                      <h2 className="font-display font-medium text-xl md:text-3xl uppercase tracking-wider mb-1 md:mb-2 text-foreground">Analysis</h2>
-                      <div className="text-muted-foreground text-xs md:text-sm font-light leading-relaxed max-w-sm line-clamp-2 md:line-clamp-none">
-                        {analysis.summary}
+                      <div className="flex items-center gap-2 mb-3.5 text-emerald-400">
+                        <div className="w-[18px] h-[18px] rounded-full bg-emerald-400/15 flex items-center justify-center flex-shrink-0">
+                          <CheckCircle2 className="w-2.5 h-2.5" />
+                        </div>
+                        <h3 className="font-medium text-xs tracking-[0.08em] uppercase">What's Working</h3>
                       </div>
+                      <ul className="flex flex-col gap-2.5">
+                        {analysis.good.map((item, i) => (
+                          <li key={i} className="flex gap-2.5 text-[13px] text-foreground/80 leading-relaxed">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0 mt-1.5"></div>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                     
-                    <div className="flex flex-col items-start md:items-end">
-                      <div className="text-[10px] md:text-xs uppercase tracking-widest text-muted-foreground mb-1 md:mb-2 font-display">Virality Score</div>
-                      <div className={`text-5xl md:text-7xl font-display font-light leading-none tracking-tighter ${getScoreColor(analysis.score)}`}>
-                        {analysis.score}
-                        <span className="text-2xl md:text-3xl text-muted-foreground/50">/100</span>
-                      </div>
-                    </div>
-                  </div>
+                    <hr className="border-t border-border/40" />
 
-                  <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-8 text-center">
-                    <div className="bg-card/50 border border-border rounded-lg p-2 md:p-3">
-                      <div className="text-[8px] md:text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Category</div>
-                      <div className="font-medium text-xs md:text-sm truncate px-1">{analysis.category}</div>
-                    </div>
-                    <div className="bg-card/50 border border-border rounded-lg p-2 md:p-3">
-                      <div className="text-[8px] md:text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Format</div>
-                      <div className="font-medium text-xs md:text-sm">{analysis.format}</div>
-                    </div>
-                    <div className="bg-card/50 border border-border rounded-lg p-2 md:p-3">
-                      <div className="text-[8px] md:text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-1">Length</div>
-                      <div className="font-medium text-xs md:text-sm">{analysis.length}</div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-6 md:space-y-8 flex-1 overflow-y-visible md:overflow-y-auto md:pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
-                    
-                    <div className="grid grid-cols-1 gap-6">
-                      {/* Good Column */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-3 md:mb-4">
-                          <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-emerald-500 dark:text-emerald-400" />
-                          <h3 className="font-display font-medium text-sm md:text-base uppercase tracking-wider text-foreground">What's Working Well</h3>
+                    {/* Areas to Improve */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-3.5 text-amber-400">
+                        <div className="w-[18px] h-[18px] rounded-full bg-amber-400/15 flex items-center justify-center flex-shrink-0">
+                          <AlertCircle className="w-2.5 h-2.5" />
                         </div>
-                        <div className="space-y-2 md:space-y-3">
-                          {analysis.good.map((item, i) => (
-                            <div key={i} className="text-foreground/80 font-light flex items-start gap-2 md:gap-3">
-                              <span className="mt-1.5 w-1 h-1 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0" />
-                              <span className="leading-snug text-xs md:text-sm">{item}</span>
-                            </div>
-                          ))}
-                        </div>
+                        <h3 className="font-medium text-xs tracking-[0.08em] uppercase">Areas to Improve</h3>
                       </div>
-                      
-                      {/* Bad Column */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-3 md:mb-4">
-                          <XCircle className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
-                          <h3 className="font-display font-medium text-sm md:text-base uppercase tracking-wider text-foreground">Areas to Improve</h3>
-                        </div>
-                        <div className="space-y-2 md:space-y-3">
-                          {analysis.bad.map((item, i) => (
-                            <div key={i} className="text-foreground/70 font-light flex items-start gap-2 md:gap-3">
-                              <span className="mt-1.5 w-1 h-1 rounded-full bg-border shrink-0" />
-                              <span className="leading-snug text-xs md:text-sm">{item}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                      <ul className="flex flex-col gap-2.5">
+                        {analysis.bad.map((item, i) => (
+                          <li key={i} className="flex gap-2.5 text-[13px] text-foreground/80 leading-relaxed">
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0 mt-1.5"></div>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
 
-                    <div className="pt-4 md:pt-6 border-t border-border">
-                      <div className="flex items-center gap-2 mb-3 md:mb-4">
-                        <AlertCircle className="w-3 h-3 md:w-4 md:h-4 text-accent dark:text-accent" />
-                        <h3 className="font-display font-medium text-sm md:text-base uppercase tracking-wider text-foreground">Pro Tips for Next Time</h3>
+                    <hr className="border-t border-border/40" />
+
+                    {/* Pro Tips */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-3.5 text-blue-400">
+                        <div className="w-[18px] h-[18px] rounded-full bg-blue-400/15 flex items-center justify-center flex-shrink-0">
+                          <ChevronRight className="w-2.5 h-2.5" />
+                        </div>
+                        <h3 className="font-medium text-xs tracking-[0.08em] uppercase">Pro Tips for Next Time</h3>
                       </div>
-                      <div className="space-y-2 md:space-y-3">
+                      <ol className="flex flex-col gap-3">
                         {analysis.tips.map((tip, i) => (
-                          <div key={i} className="text-foreground/80 font-light flex items-start gap-2 md:gap-3">
-                            <span className="mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded-full bg-accent/10 text-accent flex items-center justify-center text-[10px] md:text-xs shrink-0 font-medium">
+                          <li key={i} className="flex gap-3 items-start">
+                            <div className="text-[12px] font-medium text-blue-400 bg-blue-400/10 w-[22px] h-[22px] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                               {i + 1}
-                            </span>
-                            <span className="leading-snug text-xs md:text-sm">{tip}</span>
+                            </div>
+                            <div className="text-[13px] text-foreground/80 leading-relaxed" dangerouslySetInnerHTML={{ __html: tip.replace(/"([^"]+)"/g, '<em>"$1"</em>') }} />
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+
+                    <hr className="border-t border-border/40" />
+
+                    {/* Benchmarks */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-3.5 text-muted-foreground/80">
+                        <div className="w-[18px] h-[18px] rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+                          <LayoutGrid className="w-2.5 h-2.5 text-muted-foreground" />
+                        </div>
+                        <h3 className="font-medium text-xs tracking-[0.08em] uppercase">Top Hooks in {analysis.category} This Week</h3>
+                      </div>
+                      <div className="flex flex-col">
+                        {analysis.benchmarks.map((bench, i) => (
+                          <div key={i} className="flex items-center gap-3 py-2.5 border-b border-border/30 last:border-0">
+                            <div className="text-xs text-muted-foreground/60 w-4 flex-shrink-0">{i + 1}</div>
+                            <div className="flex-1 text-[13px] text-muted-foreground/90 italic truncate pr-2">{bench.text}</div>
+                            <div className="text-[11px] text-muted-foreground/80 bg-secondary/80 px-2 py-0.5 rounded-full flex-shrink-0">{bench.views}</div>
                           </div>
                         ))}
                       </div>
@@ -383,14 +452,12 @@ export default function Home() {
 
                   </div>
 
-                  <div className="mt-6 md:mt-8 pt-4 md:pt-8 flex items-center justify-between border-t border-border">
-                    <button className="text-[10px] md:text-xs uppercase tracking-widest font-display text-muted-foreground hover:text-foreground transition-colors" onClick={reset}>
-                      Test Another Hook
-                    </button>
-                    <button className="flex items-center gap-1 md:gap-2 text-[10px] md:text-xs uppercase tracking-widest font-display text-foreground hover:text-foreground/80 transition-colors group">
-                      Export Report <ChevronRight className="w-3 h-3 md:w-4 md:h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </div>
+                  <button 
+                    className="w-full py-3 mt-8 text-sm font-medium bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] rounded-xl shadow-sm transition-all"
+                    onClick={reset}
+                  >
+                    Test another hook
+                  </button>
                 </motion.div>
               ) : (
                 <div className="h-[30vh] lg:h-full"></div>

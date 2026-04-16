@@ -1,0 +1,144 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .wrap { background: #0f0f0f; border-radius: 16px; padding: 2rem; font-family: var(--font-sans); color: #fff; }
+  .hero { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; gap: 1rem; }
+  .hero-left { flex: 1; }
+  .hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #666; margin-bottom: 10px; }
+  .hero-hook { font-size: 15px; color: #aaa; font-style: italic; border-left: 2px solid #333; padding-left: 12px; line-height: 1.5; margin-bottom: 14px; border-radius: 0; }
+  .verdict { font-size: 13px; font-weight: 500; color: #4ade80; background: rgba(74,222,128,0.1); display: inline-block; padding: 4px 12px; border-radius: 99px; }
+  .score-block { text-align: right; flex-shrink: 0; }
+  .score-eyebrow { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #555; margin-bottom: 4px; }
+  .score-num { font-size: 64px; font-weight: 500; color: #4ade80; line-height: 1; }
+  .score-denom { font-size: 20px; color: #555; }
+  .divider { border: none; border-top: 0.5px solid #222; margin: 1.5rem 0; }
+  .section-head { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
+  .dot-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .dot-green { background: rgba(74,222,128,0.15); }
+  .dot-amber { background: rgba(251,191,36,0.15); }
+  .dot-blue { background: rgba(96,165,250,0.15); }
+  .icon-svg { width: 10px; height: 10px; }
+  .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .bullet-list li { display: flex; gap: 10px; font-size: 13px; color: #ccc; line-height: 1.5; }
+  .bullet-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+  .bdot-green { background: #4ade80; }
+  .bdot-amber { background: #fbbf24; }
+  .pro-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .pro-item { display: flex; gap: 12px; align-items: flex-start; }
+  .pro-num { font-size: 12px; font-weight: 500; color: #60a5fa; background: rgba(96,165,250,0.1); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pro-text { font-size: 13px; color: #ccc; line-height: 1.5; }
+  .bench-list { display: flex; flex-direction: column; gap: 0; }
+  .bench-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid #1e1e1e; }
+  .bench-item:last-child { border-bottom: none; }
+  .bench-rank { font-size: 12px; color: #444; width: 16px; flex-shrink: 0; }
+  .bench-text { flex: 1; font-size: 13px; color: #888; font-style: italic; }
+  .bench-views { font-size: 11px; color: #555; background: #1a1a1a; padding: 3px 8px; border-radius: 99px; flex-shrink: 0; }
+  .bars { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-lbl { font-size: 12px; color: #666; width: 120px; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 4px; background: #1e1e1e; border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; }
+  .bar-val { font-size: 11px; color: #444; width: 24px; text-align: right; flex-shrink: 0; }
+  .cta-btn { width: 100%; padding: 12px; font-size: 14px; font-weight: 500; background: #fff; color: #0f0f0f; border: none; border-radius: 8px; cursor: pointer; margin-top: 1.5rem; }
+</style>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Hook analysis</div>
+      <div class="hero-hook">"I've been streaming for 72 hours straight and something just went wrong…"</div>
+      <div class="verdict">Strong hook — ready to post</div>
+    </div>
+    <div class="score-block">
+      <div class="score-eyebrow">Virality score</div>
+      <div><span class="score-num">85</span><span class="score-denom">/100</span></div>
+    </div>
+  </div>
+
+  <div class="bars">
+    <div class="bar-row">
+      <div class="bar-lbl">Curiosity gap</div>
+      <div class="bar-track"><div class="bar-fill" style="width:90%;background:#4ade80;"></div></div>
+      <div class="bar-val">90</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lbl">Emotional stakes</div>
+      <div class="bar-track"><div class="bar-fill" style="width:82%;background:#4ade80;"></div></div>
+      <div class="bar-val">82</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lbl">Trend alignment</div>
+      <div class="bar-track"><div class="bar-fill" style="width:88%;background:#4ade80;"></div></div>
+      <div class="bar-val">88</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lbl">Pacing & rhythm</div>
+      <div class="bar-track"><div class="bar-fill" style="width:75%;background:#fbbf24;"></div></div>
+      <div class="bar-val">75</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lbl">Specificity</div>
+      <div class="bar-track"><div class="bar-fill" style="width:58%;background:#fbbf24;"></div></div>
+      <div class="bar-val">58</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-head" style="color:#4ade80;">
+    <div class="dot-icon dot-green">
+      <svg viewBox="0 0 10 10" class="icon-svg"><path d="M2 5l2 2 4-4" stroke="#4ade80" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    What's working
+  </div>
+  <ul class="bullet-list">
+    <li><div class="bullet-dot bdot-green"></div>Open loop is airtight — "something just went wrong" withholds the payoff and forces completion.</li>
+    <li><div class="bullet-dot bdot-green"></div>"72 hours" is a specific number that signals authenticity — outperforms vague claims with Gen Z audiences.</li>
+    <li><div class="bullet-dot bdot-green"></div>Matches the 2026 raw content trend — unfiltered, high-stakes streaming drama is peaking in Gaming right now.</li>
+  </ul>
+
+  <hr class="divider">
+
+  <div class="section-head" style="color:#fbbf24;">
+    <div class="dot-icon dot-amber">
+      <svg viewBox="0 0 10 10" class="icon-svg"><path d="M5 2v4M5 7.5v.5" stroke="#fbbf24" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+    </div>
+    Areas to improve
+  </div>
+  <ul class="bullet-list">
+    <li><div class="bullet-dot bdot-amber"></div>"Something went wrong" is vague — hinting at the type of problem (a ban, gear failure, health scare) would sharpen the hook further.</li>
+    <li><div class="bullet-dot bdot-amber"></div>High drop-off risk if your opening frame doesn't match the energy of this hook — you need an immediate visual payoff in the first 2 seconds.</li>
+  </ul>
+
+  <hr class="divider">
+
+  <div class="section-head" style="color:#60a5fa;">
+    <div class="dot-icon dot-blue">
+      <svg viewBox="0 0 10 10" class="icon-svg"><path d="M5 2v3l2 2" stroke="#60a5fa" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+    </div>
+    Pro tips for next time
+  </div>
+  <ol class="pro-list">
+    <li class="pro-item"><div class="pro-num">1</div><div class="pro-text">Add one specific detail — try: <em>"…and my stream just got permanently banned."</em> Specificity drives 30–40% higher retention in Gaming content.</div></li>
+    <li class="pro-item"><div class="pro-num">2</div><div class="pro-text">Open on your reaction face, not the setup — your expression in the first frame should match the stakes of the hook.</div></li>
+    <li class="pro-item"><div class="pro-num">3</div><div class="pro-text">Test a POV version: <em>"POV: hour 72 of my stream and everything just fell apart"</em> — POV format is outperforming standard hooks in Gaming TikTok this week.</div></li>
+  </ol>
+
+  <hr class="divider">
+
+  <div class="section-head" style="color:#888;">
+    <div class="dot-icon" style="background:#1a1a1a;">
+      <svg viewBox="0 0 10 10" class="icon-svg"><rect x="2" y="2" width="6" height="6" rx="1" stroke="#666" stroke-width="1.2" fill="none"/></svg>
+    </div>
+    Top hooks in Gaming this week
+  </div>
+  <div class="bench-list">
+    <div class="bench-item"><div class="bench-rank">1</div><div class="bench-text">"Chat told me to do this and I actually did it…"</div><div class="bench-views">4.2M views</div></div>
+    <div class="bench-item"><div class="bench-rank">2</div><div class="bench-text">"I haven't slept in 3 days because of this game"</div><div class="bench-views">3.8M views</div></div>
+    <div class="bench-item"><div class="bench-rank">3</div><div class="bench-text">"My Twitch chat just changed my life by accident"</div><div class="bench-views">2.9M views</div></div>
+  </div>
+
+  <button class="cta-btn">Test another hook</button>
+
+</div>
