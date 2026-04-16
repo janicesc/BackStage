@@ -365,13 +365,13 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <hr className="border-t border-border/40 my-8" />
+                  <hr className="border-t border-border/40 my-5" />
 
-                  <div className="space-y-10 flex-1 overflow-y-visible md:overflow-y-auto md:pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+                  <div className="space-y-4 flex-1 overflow-y-visible md:overflow-y-auto md:pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                     
                     {/* What's Working */}
                     <div>
-                      <div className="flex items-center gap-3 mb-4 text-emerald-400">
+                      <div className="flex items-center gap-3 mb-2.5 text-emerald-400">
                         <div className="w-[22px] h-[22px] rounded-full bg-emerald-400/15 flex items-center justify-center flex-shrink-0">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                         </div>
@@ -391,7 +391,7 @@ export default function Home() {
 
                     {/* Areas to Improve */}
                     <div>
-                      <div className="flex items-center gap-3 mb-4 text-amber-400">
+                      <div className="flex items-center gap-3 mb-2.5 text-amber-400">
                         <div className="w-[22px] h-[22px] rounded-full bg-amber-400/15 flex items-center justify-center flex-shrink-0">
                           <AlertCircle className="w-3.5 h-3.5" />
                         </div>
@@ -411,7 +411,7 @@ export default function Home() {
 
                     {/* Pro Tips */}
                     <div>
-                      <div className="flex items-center gap-3 mb-4 text-blue-400">
+                      <div className="flex items-center gap-3 mb-2.5 text-blue-400">
                         <div className="w-[22px] h-[22px] rounded-full bg-blue-400/15 flex items-center justify-center flex-shrink-0">
                           <ChevronRight className="w-3.5 h-3.5" />
                         </div>
@@ -433,7 +433,7 @@ export default function Home() {
 
                     {/* Benchmarks */}
                     <div>
-                      <div className="flex items-center gap-3 mb-4 text-muted-foreground/80">
+                      <div className="flex items-center gap-3 mb-2.5 text-muted-foreground/80">
                         <div className="w-[22px] h-[22px] rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
                           <LayoutGrid className="w-3.5 h-3.5 text-muted-foreground" />
                         </div>
