@@ -327,7 +327,7 @@ export default function Home() {
                   </div>
 
                   {/* Score Bars */}
-                  <div className="flex flex-col gap-4 mb-10">
+                  <div className="flex flex-col gap-4 mb-0">
                     <div className="flex items-center gap-4">
                       <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Curiosity gap</div>
                       <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
@@ -365,9 +365,9 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <hr className="border-t border-border/40 my-5" />
+                  <hr className="border-t border-border/40 my-6" />
 
-                  <div className="space-y-4 flex-1 overflow-y-visible md:overflow-y-auto md:pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+                  <div className="flex-1 overflow-y-visible md:overflow-y-auto md:pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                     
                     {/* What's Working */}
                     <div>
@@ -387,7 +387,7 @@ export default function Home() {
                       </ul>
                     </div>
                     
-                    <hr className="border-t border-border/40" />
+                    <hr className="border-t border-border/40 my-6" />
 
                     {/* Areas to Improve */}
                     <div>
@@ -407,7 +407,7 @@ export default function Home() {
                       </ul>
                     </div>
 
-                    <hr className="border-t border-border/40" />
+                    <hr className="border-t border-border/40 my-6" />
 
                     {/* Pro Tips */}
                     <div>
@@ -429,7 +429,7 @@ export default function Home() {
                       </ol>
                     </div>
 
-                    <hr className="border-t border-border/40" />
+                    <hr className="border-t border-border/40 my-6" />
 
                     {/* Benchmarks */}
                     <div>
