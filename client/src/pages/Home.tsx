@@ -306,81 +306,81 @@ export default function Home() {
                   {/* Hero Section */}
                   <div className="flex flex-col-reverse md:flex-row md:items-start justify-between gap-6 md:gap-4 mb-8">
                     <div className="flex-1">
-                      <div className="text-[11px] font-medium tracking-[0.1em] uppercase text-muted-foreground mb-3 font-display">Hook analysis</div>
-                      <div className="text-[15px] text-muted-foreground/90 italic border-l-2 border-border/60 pl-3 leading-relaxed mb-4">
+                      <div className="text-xs md:text-sm font-medium tracking-[0.1em] uppercase text-muted-foreground mb-4 font-display">Hook analysis</div>
+                      <div className="text-base md:text-[17px] text-muted-foreground/90 italic border-l-2 border-border/60 pl-4 leading-relaxed mb-5">
                         "{hookText || "I've been streaming for 72 hours straight and something just went wrong…"}"
                       </div>
-                      <div className="inline-flex items-center text-[13px] font-medium text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full">
+                      <div className="inline-flex items-center text-sm md:text-[15px] font-medium text-emerald-400 bg-emerald-400/10 px-4 py-1.5 rounded-full">
                         {analysis.verdict}
                       </div>
                     </div>
                     
                     <div className="flex flex-col items-start md:items-end flex-shrink-0">
-                      <div className="text-[10px] tracking-[0.1em] uppercase text-muted-foreground mb-1 font-display">Virality Score</div>
+                      <div className="text-[11px] md:text-xs tracking-[0.1em] uppercase text-muted-foreground mb-2 font-display">Virality Score</div>
                       <div className="flex items-baseline">
-                        <span className={`text-[64px] font-medium leading-none tracking-tight ${getScoreColor(analysis.score)}`}>
+                        <span className={`text-[72px] md:text-[88px] font-medium leading-none tracking-tight ${getScoreColor(analysis.score)}`}>
                           {analysis.score}
                         </span>
-                        <span className="text-[20px] text-muted-foreground/60 ml-1">/100</span>
+                        <span className="text-[24px] md:text-[28px] text-muted-foreground/60 ml-2">/100</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Score Bars */}
-                  <div className="flex flex-col gap-3 mb-8">
-                    <div className="flex items-center gap-3">
-                      <div className="text-xs text-muted-foreground w-[120px] flex-shrink-0">Curiosity gap</div>
-                      <div className="flex-1 h-1.5 bg-border/40 rounded-full overflow-hidden">
+                  <div className="flex flex-col gap-4 mb-10">
+                    <div className="flex items-center gap-4">
+                      <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Curiosity gap</div>
+                      <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
                         <div className="h-full bg-emerald-400 rounded-full" style={{ width: '90%' }}></div>
                       </div>
-                      <div className="text-[11px] text-muted-foreground w-6 text-right flex-shrink-0">90</div>
+                      <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">90</div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-xs text-muted-foreground w-[120px] flex-shrink-0">Emotional stakes</div>
-                      <div className="flex-1 h-1.5 bg-border/40 rounded-full overflow-hidden">
+                    <div className="flex items-center gap-4">
+                      <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Emotional stakes</div>
+                      <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
                         <div className="h-full bg-emerald-400 rounded-full" style={{ width: '82%' }}></div>
                       </div>
-                      <div className="text-[11px] text-muted-foreground w-6 text-right flex-shrink-0">82</div>
+                      <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">82</div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-xs text-muted-foreground w-[120px] flex-shrink-0">Trend alignment</div>
-                      <div className="flex-1 h-1.5 bg-border/40 rounded-full overflow-hidden">
+                    <div className="flex items-center gap-4">
+                      <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Trend alignment</div>
+                      <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
                         <div className="h-full bg-emerald-400 rounded-full" style={{ width: '88%' }}></div>
                       </div>
-                      <div className="text-[11px] text-muted-foreground w-6 text-right flex-shrink-0">88</div>
+                      <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">88</div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-xs text-muted-foreground w-[120px] flex-shrink-0">Pacing & rhythm</div>
-                      <div className="flex-1 h-1.5 bg-border/40 rounded-full overflow-hidden">
+                    <div className="flex items-center gap-4">
+                      <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Pacing & rhythm</div>
+                      <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
                         <div className="h-full bg-amber-400 rounded-full" style={{ width: '75%' }}></div>
                       </div>
-                      <div className="text-[11px] text-muted-foreground w-6 text-right flex-shrink-0">75</div>
+                      <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">75</div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-xs text-muted-foreground w-[120px] flex-shrink-0">Specificity</div>
-                      <div className="flex-1 h-1.5 bg-border/40 rounded-full overflow-hidden">
+                    <div className="flex items-center gap-4">
+                      <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Specificity</div>
+                      <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
                         <div className="h-full bg-amber-400 rounded-full" style={{ width: '58%' }}></div>
                       </div>
-                      <div className="text-[11px] text-muted-foreground w-6 text-right flex-shrink-0">58</div>
+                      <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">58</div>
                     </div>
                   </div>
 
-                  <hr className="border-t border-border/40 my-6" />
+                  <hr className="border-t border-border/40 my-8" />
 
-                  <div className="space-y-8 flex-1 overflow-y-visible md:overflow-y-auto md:pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+                  <div className="space-y-10 flex-1 overflow-y-visible md:overflow-y-auto md:pr-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                     
                     {/* What's Working */}
                     <div>
-                      <div className="flex items-center gap-2 mb-3.5 text-emerald-400">
-                        <div className="w-[18px] h-[18px] rounded-full bg-emerald-400/15 flex items-center justify-center flex-shrink-0">
-                          <CheckCircle2 className="w-2.5 h-2.5" />
+                      <div className="flex items-center gap-3 mb-4 text-emerald-400">
+                        <div className="w-[22px] h-[22px] rounded-full bg-emerald-400/15 flex items-center justify-center flex-shrink-0">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
                         </div>
-                        <h3 className="font-medium text-xs tracking-[0.08em] uppercase">What's Working</h3>
+                        <h3 className="font-medium text-sm tracking-[0.08em] uppercase">What's Working</h3>
                       </div>
-                      <ul className="flex flex-col gap-2.5">
+                      <ul className="flex flex-col gap-3.5">
                         {analysis.good.map((item, i) => (
-                          <li key={i} className="flex gap-2.5 text-[13px] text-foreground/80 leading-relaxed">
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0 mt-1.5"></div>
+                          <li key={i} className="flex gap-3 text-[14px] md:text-[15px] text-foreground/80 leading-relaxed">
+                            <div className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0 mt-1.5"></div>
                             <span>{item}</span>
                           </li>
                         ))}
@@ -391,16 +391,16 @@ export default function Home() {
 
                     {/* Areas to Improve */}
                     <div>
-                      <div className="flex items-center gap-2 mb-3.5 text-amber-400">
-                        <div className="w-[18px] h-[18px] rounded-full bg-amber-400/15 flex items-center justify-center flex-shrink-0">
-                          <AlertCircle className="w-2.5 h-2.5" />
+                      <div className="flex items-center gap-3 mb-4 text-amber-400">
+                        <div className="w-[22px] h-[22px] rounded-full bg-amber-400/15 flex items-center justify-center flex-shrink-0">
+                          <AlertCircle className="w-3.5 h-3.5" />
                         </div>
-                        <h3 className="font-medium text-xs tracking-[0.08em] uppercase">Areas to Improve</h3>
+                        <h3 className="font-medium text-sm tracking-[0.08em] uppercase">Areas to Improve</h3>
                       </div>
-                      <ul className="flex flex-col gap-2.5">
+                      <ul className="flex flex-col gap-3.5">
                         {analysis.bad.map((item, i) => (
-                          <li key={i} className="flex gap-2.5 text-[13px] text-foreground/80 leading-relaxed">
-                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0 mt-1.5"></div>
+                          <li key={i} className="flex gap-3 text-[14px] md:text-[15px] text-foreground/80 leading-relaxed">
+                            <div className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0 mt-1.5"></div>
                             <span>{item}</span>
                           </li>
                         ))}
@@ -411,19 +411,19 @@ export default function Home() {
 
                     {/* Pro Tips */}
                     <div>
-                      <div className="flex items-center gap-2 mb-3.5 text-blue-400">
-                        <div className="w-[18px] h-[18px] rounded-full bg-blue-400/15 flex items-center justify-center flex-shrink-0">
-                          <ChevronRight className="w-2.5 h-2.5" />
+                      <div className="flex items-center gap-3 mb-4 text-blue-400">
+                        <div className="w-[22px] h-[22px] rounded-full bg-blue-400/15 flex items-center justify-center flex-shrink-0">
+                          <ChevronRight className="w-3.5 h-3.5" />
                         </div>
-                        <h3 className="font-medium text-xs tracking-[0.08em] uppercase">Pro Tips for Next Time</h3>
+                        <h3 className="font-medium text-sm tracking-[0.08em] uppercase">Pro Tips for Next Time</h3>
                       </div>
-                      <ol className="flex flex-col gap-3">
+                      <ol className="flex flex-col gap-4">
                         {analysis.tips.map((tip, i) => (
-                          <li key={i} className="flex gap-3 items-start">
-                            <div className="text-[12px] font-medium text-blue-400 bg-blue-400/10 w-[22px] h-[22px] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <li key={i} className="flex gap-3.5 items-start">
+                            <div className="text-[13px] font-medium text-blue-400 bg-blue-400/10 w-[24px] h-[24px] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                               {i + 1}
                             </div>
-                            <div className="text-[13px] text-foreground/80 leading-relaxed" dangerouslySetInnerHTML={{ __html: tip.replace(/"([^"]+)"/g, '<em>"$1"</em>') }} />
+                            <div className="text-[14px] md:text-[15px] text-foreground/80 leading-relaxed" dangerouslySetInnerHTML={{ __html: tip.replace(/"([^"]+)"/g, '<em>"$1"</em>') }} />
                           </li>
                         ))}
                       </ol>
@@ -433,18 +433,18 @@ export default function Home() {
 
                     {/* Benchmarks */}
                     <div>
-                      <div className="flex items-center gap-2 mb-3.5 text-muted-foreground/80">
-                        <div className="w-[18px] h-[18px] rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
-                          <LayoutGrid className="w-2.5 h-2.5 text-muted-foreground" />
+                      <div className="flex items-center gap-3 mb-4 text-muted-foreground/80">
+                        <div className="w-[22px] h-[22px] rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+                          <LayoutGrid className="w-3.5 h-3.5 text-muted-foreground" />
                         </div>
-                        <h3 className="font-medium text-xs tracking-[0.08em] uppercase">Top Hooks in {analysis.category} This Week</h3>
+                        <h3 className="font-medium text-sm tracking-[0.08em] uppercase">Top Hooks in {analysis.category} This Week</h3>
                       </div>
                       <div className="flex flex-col">
                         {analysis.benchmarks.map((bench, i) => (
-                          <div key={i} className="flex items-center gap-3 py-2.5 border-b border-border/30 last:border-0">
-                            <div className="text-xs text-muted-foreground/60 w-4 flex-shrink-0">{i + 1}</div>
-                            <div className="flex-1 text-[13px] text-muted-foreground/90 italic truncate pr-2">{bench.text}</div>
-                            <div className="text-[11px] text-muted-foreground/80 bg-secondary/80 px-2 py-0.5 rounded-full flex-shrink-0">{bench.views}</div>
+                          <div key={i} className="flex items-center gap-4 py-3.5 border-b border-border/30 last:border-0">
+                            <div className="text-[13px] md:text-sm text-muted-foreground/60 w-5 flex-shrink-0">{i + 1}</div>
+                            <div className="flex-1 text-[14px] md:text-[15px] text-muted-foreground/90 italic truncate pr-3">{bench.text}</div>
+                            <div className="text-[12px] md:text-[13px] text-muted-foreground/80 bg-secondary/80 px-3 py-1 rounded-full flex-shrink-0">{bench.views}</div>
                           </div>
                         ))}
                       </div>
@@ -453,7 +453,7 @@ export default function Home() {
                   </div>
 
                   <button 
-                    className="w-full py-3 mt-8 text-sm font-medium bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] rounded-xl shadow-sm transition-all"
+                    className="w-full py-4 mt-10 text-[15px] font-medium bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] rounded-xl shadow-sm transition-all"
                     onClick={reset}
                   >
                     Test another hook
