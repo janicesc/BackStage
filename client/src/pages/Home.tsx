@@ -327,7 +327,7 @@ export default function Home() {
                   </div>
 
                   {/* Score Bars */}
-                  <div className="flex flex-col gap-4 mb-0">
+                  <div className="flex flex-col gap-4 mb-8">
                     <div className="flex items-center gap-4">
                       <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Curiosity gap</div>
                       <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
