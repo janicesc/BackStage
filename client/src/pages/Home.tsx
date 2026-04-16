@@ -47,13 +47,13 @@ const INITIAL_CAPTION = `Visiting one of the best beauty salons in Korea, Chahon
 
 export default function Home() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-  const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [caption, setCaption] = useState(INITIAL_CAPTION);
+  const [hookText, setHookText] = useState('');
+  const [platform, setPlatform] = useState('');
+  const [category, setCategory] = useState('');
+  const [hashtags, setHashtags] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -74,26 +74,13 @@ export default function Home() {
     localStorage.setItem('theme', newTheme);
   };
 
-  const handleFileClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      const url = URL.createObjectURL(selectedFile);
-      setPreviewUrl(url);
-    }
-  };
-
   const handleAnalyze = () => {
-    if (!file) return;
+    if (!hookText || !platform || !category) return;
     
     setIsUploading(true);
     setProgress(0);
     
-    // Mock upload & analyze process
+    // Mock analyze process
     const interval = setInterval(() => {
       setProgress(p => {
         if (p >= 100) {
@@ -110,12 +97,10 @@ export default function Home() {
   };
 
   const reset = () => {
-    setFile(null);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
-    }
-    setCaption(INITIAL_CAPTION);
+    setHookText('');
+    setPlatform('');
+    setCategory('');
+    setHashtags('');
     setAnalysis(null);
     setProgress(0);
   };
@@ -168,121 +153,135 @@ export default function Home() {
               <p className="text-muted-foreground text-sm md:text-lg font-light">Test your hook before it goes live. Stop the scroll.</p>
             </div>
 
-            <div className="bg-card/30 border border-border rounded-xl md:rounded-2xl p-4 md:p-6 backdrop-blur-xl relative overflow-hidden shadow-sm">
-              <AnimatePresence mode="wait">
-                {!file ? (
-                  <motion.div 
-                    key="upload"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex flex-col items-center justify-center py-12 md:py-20 rounded-xl cursor-pointer hover:bg-secondary/50 border border-transparent hover:border-border transition-all"
-                    onClick={handleFileClick}
-                    data-testid="upload-area"
-                  >
-                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-secondary flex items-center justify-center mb-4 md:mb-6 border border-border">
-                      <Upload className="w-5 h-5 md:w-6 md:h-6 text-foreground/70" />
-                    </div>
-                    <h3 className="font-display text-lg md:text-xl mb-1 md:mb-2 tracking-wide uppercase">Upload Content</h3>
-                    <p className="text-muted-foreground text-xs md:text-sm mb-6 md:mb-8 text-center max-w-xs font-light px-4">Drop your video or image here, or click to browse files.</p>
-                    <Button variant="outline" className="rounded-full px-6 md:px-8 bg-background text-xs md:text-sm h-9 md:h-10">
-                      Select File
-                    </Button>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      className="hidden" 
-                      accept="video/*,image/*" 
-                      onChange={handleFileChange}
-                      data-testid="input-file"
-                    />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="preview"
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="space-y-4 md:space-y-6"
-                  >
-                    <div className="relative aspect-[9/16] max-h-[40vh] md:max-h-[500px] mx-auto bg-black/10 dark:bg-black/40 rounded-xl overflow-hidden flex items-center justify-center group border border-border shadow-sm">
-                      {previewUrl ? (
-                        file?.type.startsWith('video/') ? (
-                          <video 
-                            src={previewUrl} 
-                            className="w-full h-full object-cover" 
-                            controls 
-                            autoPlay 
-                            muted 
-                            loop
-                          />
-                        ) : (
-                          <img 
-                            src={previewUrl} 
-                            className="w-full h-full object-cover" 
-                            alt="Preview" 
-                          />
-                        )
-                      ) : (
-                        <>
-                          <img src={bgImage} className="absolute inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 blur-xl mix-blend-luminosity" alt="Preview bg" />
-                          <div className="relative z-10 flex flex-col items-center">
-                            <div className="w-16 h-16 rounded-full bg-background/50 border border-border backdrop-blur-md flex items-center justify-center mb-3">
-                              <Play className="w-6 h-6 text-foreground ml-1" />
-                            </div>
-                            <span className="font-medium tracking-wide">{file?.name}</span>
-                            <span className="text-xs text-muted-foreground mt-1 uppercase tracking-widest">Ready to test</span>
-                          </div>
-                        </>
-                      )}
-                      
-                      {!isUploading && !analysis && (
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); reset(); }}
-                          className="absolute top-4 right-4 z-20 w-8 h-8 bg-background/80 border border-border rounded-full flex items-center justify-center hover:bg-secondary transition backdrop-blur-md shadow-sm"
-                          data-testid="btn-remove-file"
-                        >
-                          <XCircle className="w-4 h-4 text-foreground/70" />
-                        </button>
-                      )}
-                    </div>
+            <div className="bg-card/40 border border-border rounded-[1.25rem] p-6 lg:p-8 backdrop-blur-xl relative shadow-sm max-w-[560px] mx-auto lg:mx-0 w-full">
+              <div className="space-y-6">
+                {/* Field 1: Hook */}
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest block mb-1 font-display">Your hook</label>
+                  <textarea 
+                    className="w-full bg-background border border-border/80 rounded-xl p-3 md:p-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 focus:ring-1 focus:ring-foreground/30 resize-none transition-all shadow-sm"
+                    rows={4}
+                    placeholder='Describe your opening line or video concept — e.g. "I tried every viral breakfast hack so you don&apos;t have to…"'
+                    value={hookText}
+                    onChange={(e) => setHookText(e.target.value)}
+                    disabled={isUploading}
+                    data-testid="input-hook"
+                  />
+                  <p className="text-[12px] text-muted-foreground font-light pt-1">Write it like you'd actually say it on camera.</p>
+                </div>
 
-                    <div className="space-y-2 md:space-y-3">
-                      <label className="text-[10px] md:text-xs font-medium text-muted-foreground uppercase tracking-widest font-display">Caption</label>
-                      <textarea 
-                        className="w-full bg-transparent border-b border-border p-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none font-light text-xs md:text-sm transition-colors"
-                        rows={3}
-                        placeholder="Write your post caption here..."
-                        value={caption}
-                        onChange={(e) => setCaption(e.target.value)}
-                        disabled={isUploading || analysis !== null}
-                        data-testid="input-caption"
-                      />
-                    </div>
+                {/* Field 2 & 3: Platform and Category */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest block mb-1 font-display">Platform</label>
+                    <select 
+                      className="w-full bg-background border border-border/80 rounded-xl p-3 md:p-3.5 text-sm text-foreground focus:outline-none focus:border-foreground/30 focus:ring-1 focus:ring-foreground/30 transition-all appearance-none cursor-pointer shadow-sm disabled:opacity-50"
+                      value={platform}
+                      onChange={(e) => setPlatform(e.target.value)}
+                      disabled={isUploading}
+                      data-testid="select-platform"
+                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center', backgroundSize: '16px' }}
+                    >
+                      <option value="" disabled>Select platform</option>
+                      <option value="tiktok">TikTok</option>
+                      <option value="instagram">Instagram</option>
+                      <option value="youtube">YouTube</option>
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest block mb-1 font-display">Content category</label>
+                    <select 
+                      className="w-full bg-background border border-border/80 rounded-xl p-3 md:p-3.5 text-sm text-foreground focus:outline-none focus:border-foreground/30 focus:ring-1 focus:ring-foreground/30 transition-all appearance-none cursor-pointer shadow-sm disabled:opacity-50"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      disabled={isUploading}
+                      data-testid="select-category"
+                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center', backgroundSize: '16px' }}
+                    >
+                      <option value="" disabled>Select category</option>
+                      <optgroup label="Entertainment">
+                        <option value="cosplay">🎭 Cosplay</option>
+                        <option value="dance">💃 Dance</option>
+                        <option value="music">🎵 Music</option>
+                        <option value="vocal">🎤 Vocal / Singing</option>
+                        <option value="comedy">😂 Comedy & Pranks</option>
+                        <option value="film">🎬 Film & TV</option>
+                        <option value="sports">⚽ Sports</option>
+                      </optgroup>
+                      <optgroup label="Style & Beauty">
+                        <option value="fashion">👗 Fashion</option>
+                        <option value="beauty">💄 Beauty & Makeup</option>
+                        <option value="fitness">💪 Fitness</option>
+                        <option value="wellness">🧘 Self-Care & Wellness</option>
+                      </optgroup>
+                      <optgroup label="Gaming & Culture">
+                        <option value="gaming">🎮 Gaming</option>
+                        <option value="anime">🌸 Anime & Manga</option>
+                        <option value="kpop">🎯 K-pop</option>
+                      </optgroup>
+                      <optgroup label="Identity & Culture">
+                        <option value="latino">🌎 Latino</option>
+                        <option value="asian">🌏 Asian</option>
+                        <option value="black">✊ Black</option>
+                        <option value="lgbtq">🏳️‍🌈 LGBTQ+</option>
+                      </optgroup>
+                      <optgroup label="Lifestyle">
+                        <option value="vlog">🌿 Lifestyle & Vlog</option>
+                        <option value="travel">🎒 Travel</option>
+                        <option value="food">🍳 Food & Cooking</option>
+                        <option value="pets">🐾 Pets</option>
+                        <option value="parenting">👶 Parenting & Family</option>
+                      </optgroup>
+                      <optgroup label="Creative & Education">
+                        <option value="art">🎨 Art & Design</option>
+                        <option value="diy">✂️ DIY & Crafts</option>
+                        <option value="books">📚 Books & Reading</option>
+                        <option value="advice">💡 Advice & Education</option>
+                        <option value="plants">🌱 Plants & Nature</option>
+                      </optgroup>
+                      <option value="other">＋ Other</option>
+                    </select>
+                  </div>
+                </div>
 
-                    {!analysis && (
-                      <div className="pt-2 md:pt-4">
-                        {isUploading ? (
-                          <div className="space-y-3 md:space-y-4">
-                            <div className="flex justify-between text-[10px] md:text-xs font-display uppercase tracking-widest text-muted-foreground">
-                              <span className="animate-pulse">Analyzing Hook...</span>
-                              <span>{progress}%</span>
-                            </div>
-                            <Progress value={progress} className="h-1 bg-border" />
-                          </div>
-                        ) : (
-                          <Button 
-                            className="w-full py-4 md:py-6 text-xs md:text-sm font-display uppercase tracking-widest bg-foreground text-background hover:bg-foreground/90 rounded-none shadow-md"
-                            onClick={handleAnalyze}
-                            data-testid="btn-analyze"
-                          >
-                            Analyze Performance
-                          </Button>
-                        )}
+                {/* Field 4: Hashtag */}
+                <div className="space-y-1.5 pb-2">
+                  <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest block mb-1 font-display">Hashtag</label>
+                  <input 
+                    type="text"
+                    className="w-full bg-background border border-border/80 rounded-xl p-3 md:p-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 focus:ring-1 focus:ring-foreground/30 transition-all shadow-sm"
+                    placeholder="#foodtok, #grwm, #gamingsetup"
+                    value={hashtags}
+                    onChange={(e) => setHashtags(e.target.value)}
+                    disabled={isUploading}
+                    data-testid="input-hashtags"
+                  />
+                  <p className="text-[12px] text-muted-foreground font-light pt-1">Add 1–3 tags your audience would actually search.</p>
+                </div>
+
+                {/* CTA Button */}
+                <div className="pt-2">
+                  {isUploading ? (
+                    <div className="space-y-3 bg-secondary/30 p-4 rounded-xl border border-border/50">
+                      <div className="flex justify-between text-[11px] font-display uppercase tracking-widest text-foreground">
+                        <span className="animate-pulse">Analyzing Hook...</span>
+                        <span>{progress}%</span>
                       </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                      <Progress value={progress} className="h-1.5 bg-background/50" />
+                    </div>
+                  ) : (
+                    <button 
+                      className="w-full py-3.5 md:py-4 px-4 text-sm font-medium bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 disabled:hover:bg-foreground"
+                      onClick={handleAnalyze}
+                      disabled={!hookText || !platform || !category}
+                      data-testid="btn-analyze"
+                    >
+                      Analyze my hook
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -386,7 +385,7 @@ export default function Home() {
 
                   <div className="mt-6 md:mt-8 pt-4 md:pt-8 flex items-center justify-between border-t border-border">
                     <button className="text-[10px] md:text-xs uppercase tracking-widest font-display text-muted-foreground hover:text-foreground transition-colors" onClick={reset}>
-                      Test Another
+                      Test Another Hook
                     </button>
                     <button className="flex items-center gap-1 md:gap-2 text-[10px] md:text-xs uppercase tracking-widest font-display text-foreground hover:text-foreground/80 transition-colors group">
                       Export Report <ChevronRight className="w-3 h-3 md:w-4 md:h-4 group-hover:translate-x-1 transition-transform" />
