@@ -1,16 +1,38 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import {
+  hookAnalyzeRequestSchema,
+  normalizeHookAnalyzeRequest,
+  stubHookAnalysis,
+} from "@shared/hookAnalysis";
 
 export async function registerRoutes(
   httpServer: Server,
-  app: Express
+  app: Express,
 ): Promise<Server> {
-  // put application routes here
-  // prefix all routes with /api
+  /**
+   * Accepts the home-page form as JSON, validates it, and returns
+   * `input` (normalized for OpenAI / Apify) plus a stub `analysis` until
+   * the real pipeline is implemented.
+   */
+  app.post("/api/analyze-hook", (req, res) => {
+    const parsed = hookAnalyzeRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        message: "Invalid request body",
+        issues: parsed.error.flatten(),
+      });
+    }
 
-  // use storage to perform CRUD operations on the storage interface
-  // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
+    const input = normalizeHookAnalyzeRequest(parsed.data);
+    const analysis = stubHookAnalysis(input);
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("[api/analyze-hook] normalized input:", JSON.stringify(input));
+    }
+
+    return res.json({ input, analysis });
+  });
 
   return httpServer;
 }

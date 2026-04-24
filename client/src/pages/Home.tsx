@@ -1,56 +1,14 @@
-import { useState, useRef, useEffect } from "react";
-import { Upload, Play, CheckCircle2, AlertCircle, XCircle, ChevronRight, BarChart3, Clock, LayoutGrid, Tag, Video, Moon, Sun } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle2, AlertCircle, ChevronRight, LayoutGrid, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import type {
+  HookAnalysisResult,
+  NormalizedHookInput,
+} from "@shared/hookAnalysis";
 
 // Use the attached image as background
 import bgImage from "@assets/image_1772140166769.png";
-
-type AnalysisResult = {
-  score: number;
-  verdict: string;
-  topic: string;
-  category: string;
-  summary: string;
-  format: string;
-  length: string;
-  good: string[];
-  bad: string[];
-  tips: string[];
-  benchmarks: { text: string; views: string }[];
-};
-
-const MOCK_ANALYSIS: AnalysisResult = {
-  score: 85,
-  verdict: "Strong hook — ready to post",
-  topic: "Gaming Stream Drama",
-  category: "Gaming",
-  summary: "An incredibly engaging vlog-style transformation at a premium Korean hair salon. The pacing is snappy, the hooks are immediately captivating, and the final reveal drives strong viewer satisfaction and re-watchability.",
-  format: "Video",
-  length: "52s",
-  good: [
-    "Open loop is airtight — \"something just went wrong\" withholds the payoff and forces completion.",
-    "\"72 hours\" is a specific number that signals authenticity — outperforms vague claims with Gen Z audiences.",
-    "Matches the 2026 raw content trend — unfiltered, high-stakes streaming drama is peaking in Gaming right now."
-  ],
-  bad: [
-    "\"Something went wrong\" is vague — hinting at the type of problem (a ban, gear failure, health scare) would sharpen the hook further.",
-    "High drop-off risk if your opening frame doesn't match the energy of this hook — you need an immediate visual payoff in the first 2 seconds."
-  ],
-  tips: [
-    "Add one specific detail — try: \"…and my stream just got permanently banned.\" Specificity drives 30–40% higher retention in Gaming content.",
-    "Open on your reaction face, not the setup — your expression in the first frame should match the stakes of the hook.",
-    "Test a POV version: \"POV: hour 72 of my stream and everything just fell apart\" — POV format is outperforming standard hooks in Gaming TikTok this week."
-  ],
-  benchmarks: [
-    { text: "\"Chat told me to do this and I actually did it…\"", views: "4.2M views" },
-    { text: "\"I haven't slept in 3 days because of this game\"", views: "3.8M views" },
-    { text: "\"My Twitch chat just changed my life by accident\"", views: "2.9M views" }
-  ]
-};
-
-const INITIAL_CAPTION = `Visiting one of the best beauty salons in Korea, Chahong Ardor Flagship in 🇰🇷 All their hairstylists are amazing and have great techniques. Above all they have the best vibes!!! Here come all the famous Korean TV, kpop and kdramas artists 💕 My stylist was and I loved her ❤️ Follow her for hair tips ✨ If you travel to Korea and don't go to a Korea Hair Salon... did you really go to Korea? 🤯 I just went with a friend and they treated me amazing!!!! Thank you for the complementary service, they made me feel like a. ❤️ @Yun jin _ Chahong@차홍 CHAHONG OFFICIAL#celebrityhairstylist#hairstylisttips`;
 
 export default function Home() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
@@ -60,7 +18,11 @@ export default function Home() {
   const [hashtags, setHashtags] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [analysis, setAnalysis] = useState<HookAnalysisResult | null>(null);
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+  /** Filled after a successful POST — use to confirm the server parsed the form. */
+  const [serverInputPreview, setServerInputPreview] =
+    useState<NormalizedHookInput | null>(null);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -83,24 +45,62 @@ export default function Home() {
 
   const handleAnalyze = () => {
     if (!hookText || !platform || !category) return;
-    
+
+    setAnalyzeError(null);
+    setServerInputPreview(null);
     setIsUploading(true);
     setProgress(0);
-    
-    // Mock analyze process
+
     const interval = setInterval(() => {
-      setProgress(p => {
-        if (p >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setIsUploading(false);
-            setAnalysis(MOCK_ANALYSIS);
-          }, 600);
-          return 100;
+      setProgress((p) => (p >= 95 ? p : p + 5));
+    }, 120);
+
+    void (async () => {
+      try {
+        const res = await fetch("/api/analyze-hook", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            hookText,
+            platform,
+            category,
+            hashtags,
+          }),
+        });
+
+        const payload = (await res.json().catch(() => null)) as
+          | {
+              input?: NormalizedHookInput;
+              analysis?: HookAnalysisResult;
+              message?: string;
+            }
+          | null;
+
+        if (!res.ok) {
+          const msg =
+            typeof payload?.message === "string"
+              ? payload.message
+              : `Request failed (${res.status})`;
+          throw new Error(msg);
         }
-        return p + 5;
-      });
-    }, 100);
+
+        if (!payload?.analysis || !payload?.input) {
+          throw new Error("Invalid response from server");
+        }
+
+        setProgress(100);
+        setServerInputPreview(payload.input);
+        setAnalysis(payload.analysis);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : "Something went wrong";
+        setAnalyzeError(message);
+      } finally {
+        clearInterval(interval);
+        setIsUploading(false);
+        setProgress(0);
+      }
+    })();
   };
 
   const reset = () => {
@@ -109,7 +109,9 @@ export default function Home() {
     setCategory('');
     setHashtags('');
     setAnalysis(null);
+    setServerInputPreview(null);
     setProgress(0);
+    setAnalyzeError(null);
   };
 
   const getScoreColor = (score: number) => {
@@ -268,7 +270,16 @@ export default function Home() {
                 </div>
 
                 {/* CTA Button */}
-                <div className="pt-2">
+                <div className="pt-2 space-y-2">
+                  {analyzeError ? (
+                    <p
+                      className="text-sm text-destructive"
+                      role="alert"
+                      data-testid="analyze-error"
+                    >
+                      {analyzeError}
+                    </p>
+                  ) : null}
                   {isUploading ? (
                     <div className="space-y-3 bg-secondary/30 p-4 rounded-xl border border-border/50">
                       <div className="flex justify-between text-[11px] font-display uppercase tracking-widest text-foreground">
@@ -290,6 +301,20 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
+            {import.meta.env.DEV && serverInputPreview ? (
+              <div
+                className="max-w-[560px] mx-auto lg:mx-0 w-full rounded-xl border border-dashed border-border bg-muted/30 p-4 text-left"
+                data-testid="server-input-preview"
+              >
+                <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-2">
+                  Dev — normalized payload from server
+                </p>
+                <pre className="text-[11px] leading-relaxed overflow-x-auto text-foreground/90 font-mono whitespace-pre-wrap break-all">
+                  {JSON.stringify(serverInputPreview, null, 2)}
+                </pre>
+              </div>
+            ) : null}
           </div>
 
           {/* Right Column: Analysis Results */}

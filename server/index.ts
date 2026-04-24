@@ -90,11 +90,39 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || "5000", 10);
+
+  httpServer.on("error", (err: NodeJS.ErrnoException) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(
+        [
+          "",
+          `[BackStage] Port ${port} is already in use (EADDRINUSE).`,
+          "",
+          "Fix:",
+          "  • Use another port:  PORT=5001 npm run dev",
+          "  • Stop whatever is bound to this port (another terminal, Docker, etc.):",
+          "      lsof -nP -iTCP:" + port + " | grep LISTEN",
+          "  • On macOS: System Settings → General → AirDrop & Handoff →",
+          "    turn off “AirPlay Receiver” (it often grabs port 5000).",
+          "",
+        ].join("\n"),
+      );
+      process.exit(1);
+    }
+    if (err.code === "ENOTSUP") {
+      console.error(
+        "\n[BackStage] listen ENOTSUP — remove `reusePort` from httpServer.listen() in server/index.ts (macOS does not support it).\n",
+      );
+      process.exit(1);
+    }
+    console.error(err);
+    process.exit(1);
+  });
+
   httpServer.listen(
     {
       port,
       host: "0.0.0.0",
-      reusePort: true,
     },
     () => {
       log(`serving on port ${port}`);
