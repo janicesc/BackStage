@@ -2,13 +2,50 @@ import { useState, useEffect } from "react";
 import { CheckCircle2, AlertCircle, ChevronRight, LayoutGrid, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type {
   HookAnalysisResult,
-  NormalizedHookInput,
+  HookAnalyzeErrorCode,
+  HookAnalyzeSuccessResponse,
 } from "@shared/hookAnalysis";
 
 // Use the attached image as background
 import bgImage from "@assets/image_1772140166769.png";
+
+const ANALYZE_TIMEOUT_MS = 240_000;
+
+const UI_ERROR_MESSAGE_BY_CODE: Record<HookAnalyzeErrorCode, string> = {
+  VALIDATION:
+    "Some inputs are invalid. Please check your hook text, platform, category, and hashtag format.",
+  PLATFORM_UNSUPPORTED:
+    "This platform is not available right now. Please choose TikTok, Instagram, or YouTube.",
+  CONFIG:
+    "BackStage is temporarily unavailable due to a server configuration issue. Please try again shortly.",
+  APIFY:
+    "We couldn't fetch fresh social media data right now. Please retry in a moment.",
+  LLM:
+    "We found market data, but the AI analysis step failed. Please try again.",
+  EVIDENCE:
+    "We couldn't verify enough source-backed examples for a strict-confidence result. Please try a broader topic or hashtag.",
+  PARSE:
+    "The analysis response was incomplete or invalid. Please run analysis again.",
+};
+
+type HookAnalyzeErrorPayload = {
+  ok?: false;
+  error?: string;
+  code?: HookAnalyzeErrorCode;
+};
+
+function getUiErrorMessage(payload: HookAnalyzeErrorPayload, statusText: string): string {
+  if (payload.code) {
+    return UI_ERROR_MESSAGE_BY_CODE[payload.code];
+  }
+  if (typeof payload.error === "string" && payload.error.trim()) {
+    return payload.error;
+  }
+  return statusText || "Analysis failed. Please try again.";
+}
 
 export default function Home() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
@@ -19,10 +56,8 @@ export default function Home() {
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [analysis, setAnalysis] = useState<HookAnalysisResult | null>(null);
+  const [analysisMeta, setAnalysisMeta] = useState<HookAnalyzeSuccessResponse["meta"] | null>(null);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
-  /** Filled after a successful POST — use to confirm the server parsed the form. */
-  const [serverInputPreview, setServerInputPreview] =
-    useState<NormalizedHookInput | null>(null);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -43,64 +78,58 @@ export default function Home() {
     localStorage.setItem('theme', newTheme);
   };
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!hookText || !platform || !category) return;
-
     setAnalyzeError(null);
-    setServerInputPreview(null);
     setIsUploading(true);
-    setProgress(0);
+    setProgress(45);
 
-    const interval = setInterval(() => {
-      setProgress((p) => (p >= 95 ? p : p + 5));
-    }, 120);
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), ANALYZE_TIMEOUT_MS);
 
-    void (async () => {
-      try {
-        const res = await fetch("/api/analyze-hook", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            hookText,
-            platform,
-            category,
-            hashtags,
-          }),
-        });
+    try {
+      const res = await fetch("/api/hook-analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        signal: controller.signal,
+        body: JSON.stringify({
+          hook: hookText,
+          platform,
+          category,
+          hashtag: hashtags,
+        }),
+      });
 
-        const payload = (await res.json().catch(() => null)) as
-          | {
-              input?: NormalizedHookInput;
-              analysis?: HookAnalysisResult;
-              message?: string;
-            }
-          | null;
+      const data: unknown = await res.json().catch(() => ({}));
+      const body = data as HookAnalyzeErrorPayload;
 
-        if (!res.ok) {
-          const msg =
-            typeof payload?.message === "string"
-              ? payload.message
-              : `Request failed (${res.status})`;
-          throw new Error(msg);
-        }
-
-        if (!payload?.analysis || !payload?.input) {
-          throw new Error("Invalid response from server");
-        }
-
-        setProgress(100);
-        setServerInputPreview(payload.input);
-        setAnalysis(payload.analysis);
-      } catch (e) {
-        const message = e instanceof Error ? e.message : "Something went wrong";
-        setAnalyzeError(message);
-      } finally {
-        clearInterval(interval);
-        setIsUploading(false);
-        setProgress(0);
+      if (!res.ok || body?.ok === false) {
+        setAnalyzeError(getUiErrorMessage(body, res.statusText));
+        return;
       }
-    })();
+
+      const success = data as HookAnalyzeSuccessResponse;
+      if (success.ok && success.analysis) {
+        setAnalysis(success.analysis);
+        setAnalysisMeta(success.meta);
+        setProgress(100);
+      } else {
+        setAnalyzeError("Unexpected response from the server.");
+      }
+    } catch (e) {
+      if (e instanceof Error && e.name === "AbortError") {
+        setAnalyzeError(
+          "Request timed out. Apify market runs often take 30–60 seconds — try again in a moment.",
+        );
+      } else {
+        setAnalyzeError(e instanceof Error ? e.message : "Network error");
+      }
+    } finally {
+      clearTimeout(timeoutId);
+      setIsUploading(false);
+      setProgress(0);
+    }
   };
 
   const reset = () => {
@@ -109,7 +138,7 @@ export default function Home() {
     setCategory('');
     setHashtags('');
     setAnalysis(null);
-    setServerInputPreview(null);
+    setAnalysisMeta(null);
     setProgress(0);
     setAnalyzeError(null);
   };
@@ -118,6 +147,12 @@ export default function Home() {
     if (score >= 80) return "text-emerald-500 dark:text-emerald-400";
     if (score >= 50) return "text-amber-500 dark:text-amber-400";
     return "text-rose-500 dark:text-rose-400";
+  };
+
+  const getBarFillClass = (v: number) => {
+    if (v >= 80) return "bg-emerald-400";
+    if (v >= 50) return "bg-amber-400";
+    return "bg-rose-400";
   };
 
   return (
@@ -269,29 +304,32 @@ export default function Home() {
                   <p className="text-[12px] text-muted-foreground font-light pt-1">Add 1–3 tags your audience would actually search.</p>
                 </div>
 
+                {analyzeError && (
+                  <Alert variant="destructive" className="text-left border-destructive/40">
+                    <AlertTitle className="text-sm">Couldn&apos;t complete analysis</AlertTitle>
+                    <AlertDescription className="text-xs opacity-90">{analyzeError}</AlertDescription>
+                  </Alert>
+                )}
+
                 {/* CTA Button */}
                 <div className="pt-2 space-y-2">
-                  {analyzeError ? (
-                    <p
-                      className="text-sm text-destructive"
-                      role="alert"
-                      data-testid="analyze-error"
-                    >
-                      {analyzeError}
-                    </p>
-                  ) : null}
                   {isUploading ? (
                     <div className="space-y-3 bg-secondary/30 p-4 rounded-xl border border-border/50">
                       <div className="flex justify-between text-[11px] font-display uppercase tracking-widest text-foreground">
-                        <span className="animate-pulse">Analyzing Hook...</span>
-                        <span>{progress}%</span>
+                        <span className="animate-pulse">{platform || "Platform"} market data (Apify) + AI scoring</span>
+                        <span>…</span>
                       </div>
-                      <Progress value={progress} className="h-1.5 bg-background/50" />
+                      <p className="text-[11px] text-muted-foreground font-light">
+                        This usually takes 30–60 seconds. Keep this tab open.
+                      </p>
+                      <Progress value={progress} className="h-1.5 bg-background/50 animate-pulse" />
                     </div>
                   ) : (
                     <button 
                       className="w-full py-3.5 md:py-4 px-4 text-sm font-medium bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 disabled:hover:bg-foreground"
-                      onClick={handleAnalyze}
+                      onClick={() => {
+                        void handleAnalyze();
+                      }}
                       disabled={!hookText || !platform || !category}
                       data-testid="btn-analyze"
                     >
@@ -301,20 +339,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            {import.meta.env.DEV && serverInputPreview ? (
-              <div
-                className="max-w-[560px] mx-auto lg:mx-0 w-full rounded-xl border border-dashed border-border bg-muted/30 p-4 text-left"
-                data-testid="server-input-preview"
-              >
-                <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground mb-2">
-                  Dev — normalized payload from server
-                </p>
-                <pre className="text-[11px] leading-relaxed overflow-x-auto text-foreground/90 font-mono whitespace-pre-wrap break-all">
-                  {JSON.stringify(serverInputPreview, null, 2)}
-                </pre>
-              </div>
-            ) : null}
           </div>
 
           {/* Right Column: Analysis Results */}
@@ -338,6 +362,18 @@ export default function Home() {
                       <div className="inline-flex items-center text-sm md:text-[15px] font-medium text-emerald-400 bg-emerald-400/10 px-4 py-1.5 rounded-full">
                         {analysis.verdict}
                       </div>
+                      {analysisMeta && (
+                        <div className="mt-3 text-[11px] text-muted-foreground flex flex-wrap gap-3">
+                          <span>Window: {analysisMeta.timeWindow.replaceAll("_", " ")}</span>
+                          <span>Sample: {analysisMeta.marketItemsUsed} posts</span>
+                          <span>Confidence: {analysisMeta.confidence}</span>
+                          {analysisMeta.evidenceInsufficient && (
+                            <span className="text-amber-400">
+                              We found limited recent examples for this topic, so treat this score as directional.
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="flex flex-col items-start md:items-end flex-shrink-0">
@@ -351,43 +387,32 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Score Bars */}
+                  {/* Score Bars (from API dimensions) */}
                   <div className="flex flex-col gap-4 mb-8">
-                    <div className="flex items-center gap-4">
-                      <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Curiosity gap</div>
-                      <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-400 rounded-full" style={{ width: '90%' }}></div>
+                    {(
+                      [
+                        { label: "Curiosity gap", v: analysis.dimensions.curiosityGap },
+                        { label: "Emotional stakes", v: analysis.dimensions.emotionalStakes },
+                        { label: "Trend alignment", v: analysis.dimensions.trendAlignment },
+                        { label: "Pacing & rhythm", v: analysis.dimensions.pacingRhythm },
+                        { label: "Specificity", v: analysis.dimensions.specificity },
+                      ] as const
+                    ).map((row) => (
+                      <div key={row.label} className="flex items-center gap-4">
+                        <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">
+                          {row.label}
+                        </div>
+                        <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${getBarFillClass(row.v)}`}
+                            style={{ width: `${Math.min(100, Math.max(0, row.v))}%` }}
+                          />
+                        </div>
+                        <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">
+                          {row.v}
+                        </div>
                       </div>
-                      <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">90</div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Emotional stakes</div>
-                      <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-400 rounded-full" style={{ width: '82%' }}></div>
-                      </div>
-                      <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">82</div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Trend alignment</div>
-                      <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-400 rounded-full" style={{ width: '88%' }}></div>
-                      </div>
-                      <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">88</div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Pacing & rhythm</div>
-                      <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
-                        <div className="h-full bg-amber-400 rounded-full" style={{ width: '75%' }}></div>
-                      </div>
-                      <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">75</div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-[13px] md:text-sm text-muted-foreground w-[140px] flex-shrink-0">Specificity</div>
-                      <div className="flex-1 h-2 bg-border/40 rounded-full overflow-hidden">
-                        <div className="h-full bg-amber-400 rounded-full" style={{ width: '58%' }}></div>
-                      </div>
-                      <div className="text-xs md:text-[13px] text-muted-foreground w-8 text-right flex-shrink-0">58</div>
-                    </div>
+                    ))}
                   </div>
 
                   <hr className="border-t border-border/40 my-6" />
@@ -465,13 +490,30 @@ export default function Home() {
                         <h3 className="font-medium text-sm tracking-[0.08em] uppercase">Top Hooks in {analysis.category} This Week</h3>
                       </div>
                       <div className="flex flex-col">
-                        {analysis.benchmarks.map((bench, i) => (
-                          <div key={i} className="flex items-center gap-4 py-3.5 border-b border-border/30 last:border-0">
-                            <div className="text-[13px] md:text-sm text-muted-foreground/60 w-5 flex-shrink-0">{i + 1}</div>
-                            <div className="flex-1 text-[14px] md:text-[15px] text-muted-foreground/90 italic truncate pr-3">{bench.text}</div>
-                            <div className="text-[12px] md:text-[13px] text-muted-foreground/80 bg-secondary/80 px-3 py-1 rounded-full flex-shrink-0">{bench.views}</div>
+                        {analysis.benchmarks.length === 0 ? (
+                          <div className="py-3 text-[12px] text-muted-foreground/80">
+                            We couldn't find enough recent top-hook examples for this topic yet.
                           </div>
-                        ))}
+                        ) : (
+                          analysis.benchmarks.map((bench, i) => (
+                            <div key={i} className="flex items-center gap-4 py-3.5 border-b border-border/30 last:border-0">
+                              <div className="text-[13px] md:text-sm text-muted-foreground/60 w-5 flex-shrink-0">{i + 1}</div>
+                              <div className="flex-1 min-w-0 pr-3">
+                                <div className="text-[14px] md:text-[15px] text-muted-foreground/90 italic truncate">{bench.text}</div>
+                                <div className="text-[11px] text-muted-foreground/70 flex gap-2">
+                                  {bench.platform && <span>{bench.platform}</span>}
+                                  {bench.postedAt && <span>{bench.postedAt}</span>}
+                                  {bench.url && (
+                                    <a href={bench.url} target="_blank" rel="noreferrer" className="underline hover:text-foreground">
+                                      source
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-[12px] md:text-[13px] text-muted-foreground/80 bg-secondary/80 px-3 py-1 rounded-full flex-shrink-0">{bench.views}</div>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
 
@@ -495,7 +537,7 @@ export default function Home() {
       
       {/* Footer Text */}
       <div className="relative z-10 py-3 md:py-6 text-center text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-display flex-shrink-0 bg-background/80 backdrop-blur-sm">
-        Generated based on your past 3-month performance, and Creators in your same category.
+        Generated from real-time social media benchmarks and AI analysis of your hook idea.
       </div>
     </div>
   );

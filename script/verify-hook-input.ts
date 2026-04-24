@@ -1,11 +1,8 @@
 /**
- * Verifies Zod parsing + normalization for POST /api/analyze-hook payloads.
+ * Verifies Zod parsing for POST /api/hook-analyze payloads.
  * Run: npx tsx script/verify-hook-input.ts
  */
-import {
-  hookAnalyzeRequestSchema,
-  normalizeHookAnalyzeRequest,
-} from "../shared/hookAnalysis.ts";
+import { hookAnalyzeRequestSchema } from "../shared/hookAnalysis.ts";
 
 const cases: {
   name: string;
@@ -14,37 +11,37 @@ const cases: {
     hook: string;
     platform: string;
     category: string;
-    hashtagTokens: string[];
+    hashtag: string;
   };
 }[] = [
   {
     name: "typical form body",
     body: {
-      hookText: "  My hook line  ",
+      hook: "  My hook line  ",
       platform: "tiktok",
       category: "gaming",
-      hashtags: "#foodtok, grwm  #setup",
+      hashtag: "#foodtok, grwm  #setup",
     },
     expect: {
       hook: "My hook line",
       platform: "tiktok",
       category: "gaming",
-      hashtagTokens: ["foodtok", "grwm", "setup"],
+      hashtag: "#foodtok, grwm  #setup",
     },
   },
   {
     name: "empty hashtags",
     body: {
-      hookText: "x",
+      hook: "x",
       platform: "youtube",
       category: "  beauty  ",
-      hashtags: "",
+      hashtag: "",
     },
     expect: {
       hook: "x",
       platform: "youtube",
       category: "beauty",
-      hashtagTokens: [],
+      hashtag: "",
     },
   },
 ];
@@ -57,14 +54,13 @@ for (const c of cases) {
     failed++;
     continue;
   }
-  const n = normalizeHookAnalyzeRequest(p.data);
   const ok =
-    n.hook === c.expect.hook &&
-    n.platform === c.expect.platform &&
-    n.category === c.expect.category &&
-    JSON.stringify(n.hashtagTokens) === JSON.stringify(c.expect.hashtagTokens);
+    p.data.hook === c.expect.hook &&
+    p.data.platform === c.expect.platform &&
+    p.data.category === c.expect.category &&
+    p.data.hashtag === c.expect.hashtag;
   if (!ok) {
-    console.error("FAIL", c.name, "got", n, "expected", c.expect);
+    console.error("FAIL", c.name, "got", p.data, "expected", c.expect);
     failed++;
   } else {
     console.log("OK ", c.name);
@@ -72,7 +68,7 @@ for (const c of cases) {
 }
 
 const bad = hookAnalyzeRequestSchema.safeParse({
-  hookText: "hi",
+  hook: "hi",
   platform: "twitter",
   category: "x",
 });
