@@ -14,6 +14,8 @@ const APIFY_API = "https://api.apify.com/v2";
 const LLM_MODEL = "gpt-4o-mini";
 const MAX_MARKET_JSON_CHARS = 28_000;
 const DATASET_MAX_ITEMS = 35;
+/** Apify sync `waitForFinish` often returns early (~60s) with non-terminal status; we poll instead. */
+const APIFY_RUN_POLL_INTERVAL_MS = 3_000;
 
 function parseEnvInt(name: string, fallback: number): number {
   const raw = process.env[name];
@@ -26,6 +28,7 @@ function parseEnvInt(name: string, fallback: number): number {
 const MIN_URL_BACKED_BENCHMARKS = parseEnvInt("MIN_URL_BACKED_BENCHMARKS", 3);
 const BENCHMARK_EVIDENCE_MODE =
   process.env.BENCHMARK_EVIDENCE_MODE === "strict" ? "strict" : "soft";
+const APIFY_RUN_MAX_WAIT_MS = parseEnvInt("APIFY_RUN_MAX_WAIT_MS", 180_000);
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -48,6 +51,19 @@ type RawItem = Record<string, unknown>;
 type SupportedPlatform = HookAnalyzeRequest["platform"];
 const APIFY_FETCH_TIMEOUT_MS = 45_000;
 const APIFY_FETCH_RETRIES = 1;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function apifyParseRunData(json: unknown): Record<string, unknown> | null {
+  const data =
+    typeof json === "object" && json !== null && "data" in json
+      ? (json as { data: Record<string, unknown> }).data
+      : (json as Record<string, unknown> | null);
+  if (!data || typeof data !== "object") return null;
+  return data;
+}
 type MarketContextItem = {
   text: string;
   playCount: number;
@@ -220,20 +236,36 @@ function buildApifyInput(
     };
   }
 
-  const hashtags = tagList.length > 0 ? tagList : [body.category];
   const searchQueries = [querySeed || body.category];
+  const input: Record<string, unknown> = {
+    searchQueries,
+    resultsPerPage: 40,
+  };
+
+  if (tagList.length > 0) {
+    // User-supplied hashtags: scrape by tag. Do not set searchDatePosted here — the actor
+    // validates date filters against the /video *search* tab; hashtag runs do not reliably
+    // apply searchSection, which triggers "search section must be set to '/video'".
+    input.hashtags = tagList;
+  } else {
+    // Search-only: hook + category are in searchQueries; recency filter is allowed with /video.
+    input.searchSection = "/video";
+    input.searchDatePosted = "3";
+  }
+
   return {
-    input: {
-      hashtags,
-      searchQueries,
-      resultsPerPage: 40,
-      searchDatePosted: "3",
-    },
+    input,
     timeWindow: "last_7_days",
-    normalizationNotes: [
-      "TikTok recency uses searchDatePosted=3 (actor enum for recent week bucket).",
-      "Ranking prioritizes views, then weighted engagement.",
-    ],
+    normalizationNotes:
+      tagList.length > 0
+        ? [
+            "TikTok: hashtag mode (no searchDatePosted) to satisfy actor validation.",
+            "Ranking prioritizes views, then weighted engagement.",
+          ]
+        : [
+            "TikTok: searchSection=/video with searchDatePosted=3 (recent-week bucket per actor).",
+            "Ranking prioritizes views, then weighted engagement.",
+          ],
   };
 }
 
@@ -275,11 +307,12 @@ async function apifyRun(
     (err as Error & { code: string }).code = "PLATFORM_UNSUPPORTED";
     throw err;
   }
-  const url = `${APIFY_API}/acts/${actor}/runs?token=${encodeURIComponent(
-    token,
-  )}&waitForFinish=300`;
 
-  const res = await fetchWithRetry(url, {
+  const startUrl = `${APIFY_API}/acts/${actor}/runs?token=${encodeURIComponent(
+    token,
+  )}`;
+
+  const res = await fetchWithRetry(startUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
@@ -291,26 +324,82 @@ async function apifyRun(
       typeof runJson === "object" && runJson !== null && "error" in runJson
         ? JSON.stringify((runJson as { error: unknown }).error)
         : res.statusText;
-    throw new Error(`Apify run failed: ${res.status} ${errMsg}`);
+    const err = new Error(`Apify run failed: ${res.status} ${errMsg}`);
+    (err as Error & { code: string }).code = "APIFY";
+    throw err;
   }
 
-  const data =
-    typeof runJson === "object" && runJson !== null && "data" in runJson
-      ? (runJson as { data: Record<string, unknown> }).data
-      : (runJson as Record<string, unknown> | null);
-  if (!data || typeof data !== "object") {
-    throw new Error("Apify: missing run data in response");
+  const startData = apifyParseRunData(runJson);
+  if (!startData) {
+    const err = new Error("Apify: missing run data in start response");
+    (err as Error & { code: string }).code = "APIFY";
+    throw err;
   }
 
-  const runId = typeof data.id === "string" ? data.id : String(data.id ?? "unknown");
-  const status = data.status;
-  if (status !== "SUCCEEDED") {
-    throw new Error(`Apify run did not succeed: status=${String(status)}`);
+  const runId =
+    typeof startData.id === "string" ? startData.id : String(startData.id ?? "");
+  if (!runId) {
+    const err = new Error("Apify: missing run id");
+    (err as Error & { code: string }).code = "APIFY";
+    throw err;
+  }
+
+  const deadline = Date.now() + APIFY_RUN_MAX_WAIT_MS;
+  let data: Record<string, unknown> | null = startData;
+
+  while (Date.now() < deadline) {
+    const status = data.status;
+    if (status === "SUCCEEDED") break;
+    if (
+      status === "FAILED" ||
+      status === "ABORTED" ||
+      status === "TIMED-OUT"
+    ) {
+      const err = new Error(`Apify run ended with status=${String(status)}`);
+      (err as Error & { code: string }).code = "APIFY";
+      throw err;
+    }
+
+    await delay(APIFY_RUN_POLL_INTERVAL_MS);
+
+    const pollUrl = `${APIFY_API}/actor-runs/${encodeURIComponent(
+      runId,
+    )}?token=${encodeURIComponent(token)}`;
+    const pollRes = await fetchWithRetry(pollUrl, { method: "GET" });
+    const pollJson: unknown = await pollRes.json().catch(() => ({}));
+    if (!pollRes.ok) {
+      const errMsg =
+        typeof pollJson === "object" && pollJson !== null && "error" in pollJson
+          ? JSON.stringify((pollJson as { error: unknown }).error)
+          : pollRes.statusText;
+      const err = new Error(`Apify run poll failed: ${pollRes.status} ${errMsg}`);
+      (err as Error & { code: string }).code = "APIFY";
+      throw err;
+    }
+    const next = apifyParseRunData(pollJson);
+    if (!next) {
+      const err = new Error("Apify: missing run data while polling");
+      (err as Error & { code: string }).code = "APIFY";
+      throw err;
+    }
+    data = next;
+  }
+
+  if (data.status !== "SUCCEEDED") {
+    const err = new Error(
+      `Apify run did not finish within ${APIFY_RUN_MAX_WAIT_MS}ms (last status=${String(
+        data.status,
+      )})`,
+    );
+    (err as Error & { code: string }).code = "APIFY";
+    throw err;
   }
 
   const defaultDatasetId = data.defaultDatasetId;
   if (typeof defaultDatasetId !== "string" || !defaultDatasetId) {
-    throw new Error("Apify: no defaultDatasetId on run");
+    const err = new Error("Apify: no defaultDatasetId on run");
+    (err as Error & { code: string }).code = "APIFY";
+    throw err;
   }
 
   const itemsUrl = `${APIFY_API}/datasets/${encodeURIComponent(
@@ -319,13 +408,17 @@ async function apifyRun(
 
   const itemsRes = await fetchWithRetry(itemsUrl, { method: "GET" });
   if (!itemsRes.ok) {
-    throw new Error(
+    const err = new Error(
       `Apify dataset fetch failed: ${itemsRes.status} ${itemsRes.statusText}`,
     );
+    (err as Error & { code: string }).code = "APIFY";
+    throw err;
   }
   const items: unknown = await itemsRes.json();
   if (!Array.isArray(items)) {
-    throw new Error("Apify dataset: expected JSON array");
+    const err = new Error("Apify dataset: expected JSON array");
+    (err as Error & { code: string }).code = "APIFY";
+    throw err;
   }
   return { runId, items };
 }

@@ -12,7 +12,8 @@ import type {
 // Use the attached image as background
 import bgImage from "@assets/image_1772140166769.png";
 
-const ANALYZE_TIMEOUT_MS = 240_000;
+/** Apify YouTube runs often exceed 60–90s; server polls up to ~3m before LLM. */
+const ANALYZE_TIMEOUT_MS = 300_000;
 
 const UI_ERROR_MESSAGE_BY_CODE: Record<HookAnalyzeErrorCode, string> = {
   VALIDATION:
@@ -120,7 +121,7 @@ export default function Home() {
     } catch (e) {
       if (e instanceof Error && e.name === "AbortError") {
         setAnalyzeError(
-          "Request timed out. Apify market runs often take 30–60 seconds — try again in a moment.",
+          "Request timed out. Some platforms (especially YouTube) can take 1–3 minutes — try again or increase timeout.",
         );
       } else {
         setAnalyzeError(e instanceof Error ? e.message : "Network error");
@@ -320,7 +321,7 @@ export default function Home() {
                         <span>…</span>
                       </div>
                       <p className="text-[11px] text-muted-foreground font-light">
-                        This usually takes 30–60 seconds. Keep this tab open.
+                        TikTok / Instagram are often under a minute; YouTube can take 1–3 minutes. Keep this tab open.
                       </p>
                       <Progress value={progress} className="h-1.5 bg-background/50 animate-pulse" />
                     </div>
