@@ -14,6 +14,8 @@ const APIFY_API = "https://api.apify.com/v2";
 const LLM_MODEL = "gpt-4o-mini";
 const MAX_MARKET_JSON_CHARS = 28_000;
 const DATASET_MAX_ITEMS = 35;
+const APIFY_TARGET_RESULTS = 100;
+const LOOKBACK_DAYS = 183;
 /** Apify sync `waitForFinish` often returns early (~60s) with non-terminal status; we poll instead. */
 const APIFY_RUN_POLL_INTERVAL_MS = 3_000;
 
@@ -75,6 +77,24 @@ type MarketContextItem = {
   engagementScore: number;
   platform: SupportedPlatform;
 };
+
+function toEpochMs(value: string | null): number | null {
+  if (!value) return null;
+  const numeric = Number(value);
+  if (!Number.isNaN(numeric)) {
+    // If the actor returns seconds, normalize to ms.
+    return numeric < 1_000_000_000_000 ? numeric * 1000 : numeric;
+  }
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function withinLastDays(value: string | null, days: number): boolean {
+  const epoch = toEpochMs(value);
+  if (epoch === null) return false;
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+  return epoch >= cutoff;
+}
 
 function pickString(obj: RawItem, key: string): string | undefined {
   const v = obj[key];
@@ -173,12 +193,24 @@ export function compactItemsForContext(
     return normalizeTiktokItem(row);
   });
 
-  return normalized
-    .sort((a, b) => {
+  const rankByPerformance = (input: MarketContextItem[]): MarketContextItem[] =>
+    input.sort((a, b) => {
       if (b.playCount !== a.playCount) return b.playCount - a.playCount;
       return b.engagementScore - a.engagementScore;
-    })
-    .slice(0, DATASET_MAX_ITEMS);
+    });
+
+  const recent: MarketContextItem[] = [];
+  const older: MarketContextItem[] = [];
+  for (const item of normalized) {
+    if (withinLastDays(item.createTimeISO, LOOKBACK_DAYS)) {
+      recent.push(item);
+    } else {
+      older.push(item);
+    }
+  }
+
+  // Prioritize recent posts, then backfill with older posts when recent coverage is thin.
+  return [...rankByPerformance(recent), ...rankByPerformance(older)].slice(0, DATASET_MAX_ITEMS);
 }
 
 function getConfidence(items: MarketContextItem[]): "high" | "medium" | "low" {
@@ -205,12 +237,13 @@ function buildApifyInput(
       input: {
         search: querySeed || body.category,
         resultsType: "posts",
-        resultsLimit: 60,
-        onlyPostsNewerThan: "7 days",
+        resultsLimit: APIFY_TARGET_RESULTS,
+        onlyPostsNewerThan: "6 months",
       },
-      timeWindow: "last_7_days",
+      timeWindow: "last_6_months",
       normalizationNotes: [
-        "Instagram recency uses onlyPostsNewerThan=7 days.",
+        "Instagram target window uses onlyPostsNewerThan=6 months.",
+        `Backend also post-filters to ${LOOKBACK_DAYS} days for consistency across actors.`,
         "Share metrics may be sparse; engagement weighting normalizes missing values.",
       ],
     };
@@ -220,16 +253,17 @@ function buildApifyInput(
     return {
       input: {
         searchQueries: [querySeed || body.category],
-        maxResults: 40,
-        maxResultsShorts: 20,
-        maxResultsStreams: 10,
-        maxResultStreams: 10,
+        maxResults: APIFY_TARGET_RESULTS,
+        maxResultsShorts: APIFY_TARGET_RESULTS,
+        maxResultsStreams: APIFY_TARGET_RESULTS,
+        maxResultStreams: APIFY_TARGET_RESULTS,
         startUrls: [],
-        dateFilter: "week",
+        dateFilter: "year",
       },
-      timeWindow: "last_7_days",
+      timeWindow: "last_6_months",
       normalizationNotes: [
-        "YouTube recency uses dateFilter=week.",
+        "YouTube uses dateFilter=year as broad pre-filter.",
+        `Backend post-filters to ${LOOKBACK_DAYS} days to enforce the 6-month window.`,
         "YouTube stream limit includes both maxResultsStreams and maxResultStreams for actor-schema compatibility.",
         "Public shareCount is often unavailable on YouTube and may be zero.",
       ],
@@ -239,7 +273,7 @@ function buildApifyInput(
   const searchQueries = [querySeed || body.category];
   const input: Record<string, unknown> = {
     searchQueries,
-    resultsPerPage: 40,
+    resultsPerPage: APIFY_TARGET_RESULTS,
   };
 
   if (tagList.length > 0) {
@@ -250,20 +284,22 @@ function buildApifyInput(
   } else {
     // Search-only: hook + category are in searchQueries; recency filter is allowed with /video.
     input.searchSection = "/video";
-    input.searchDatePosted = "3";
+    input.searchDatePosted = "182";
   }
 
   return {
     input,
-    timeWindow: "last_7_days",
+    timeWindow: "last_6_months",
     normalizationNotes:
       tagList.length > 0
         ? [
             "TikTok: hashtag mode (no searchDatePosted) to satisfy actor validation.",
+            `Backend post-filters to ${LOOKBACK_DAYS} days to enforce the 6-month window.`,
             "Ranking prioritizes views, then weighted engagement.",
           ]
         : [
-            "TikTok: searchSection=/video with searchDatePosted=3 (recent-week bucket per actor).",
+            "TikTok: searchSection=/video with searchDatePosted=182 (6-month target).",
+            `Backend post-filters to ${LOOKBACK_DAYS} days for strict recency enforcement.`,
             "Ranking prioritizes views, then weighted engagement.",
           ],
   };
@@ -429,6 +465,7 @@ function enforceBenchmarkEvidence(
 ): HookAnalysisResult {
   const fallback = market
     .filter((m) => m.webVideoUrl)
+    .sort((a, b) => (toEpochMs(b.createTimeISO) ?? 0) - (toEpochMs(a.createTimeISO) ?? 0))
     .slice(0, Math.max(3, Math.min(8, analysis.benchmarks.length)))
     .map((m) => ({
       text: m.text || "Top performing post",
@@ -447,7 +484,10 @@ function enforceBenchmarkEvidence(
   const sourceBackedBenchmarks = mergedBenchmarks.filter(
     (b) => typeof b.url === "string" && b.url.length > 0,
   );
-  return { ...analysis, benchmarks: sourceBackedBenchmarks };
+  const recencySorted = sourceBackedBenchmarks.sort(
+    (a, b) => (toEpochMs(b.postedAt ?? null) ?? 0) - (toEpochMs(a.postedAt ?? null) ?? 0),
+  );
+  return { ...analysis, benchmarks: recencySorted };
 }
 
 const analysisJsonSchemaHint = `{
