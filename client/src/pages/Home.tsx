@@ -3,17 +3,28 @@ import { CheckCircle2, AlertCircle, ChevronRight, LayoutGrid, Moon, Sun } from "
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { BrandLockup } from "@/components/BrandLockup";
+import { SimrunBackground } from "@/components/SimrunBackground";
 import type {
   HookAnalysisResult,
   HookAnalyzeErrorCode,
   HookAnalyzeSuccessResponse,
 } from "@shared/hookAnalysis";
 
-// Use the attached image as background
-import bgImage from "@assets/image_1772140166769.png";
-
 /** Apify YouTube runs often exceed 60–90s; server polls up to ~3m before LLM. */
 const ANALYZE_TIMEOUT_MS = 300_000;
+const MAX_HASHTAGS = 6;
+
+function normalizeHashtagToken(raw: string): string {
+  return raw.replace(/^#+/, "").trim().toLowerCase().replace(/[^\w]/g, "");
+}
+
+function parseHashtagTokens(raw: string): string[] {
+  return raw
+    .split(/[\s,]+/)
+    .map(normalizeHashtagToken)
+    .filter(Boolean);
+}
 
 const UI_ERROR_MESSAGE_BY_CODE: Record<HookAnalyzeErrorCode, string> = {
   VALIDATION:
@@ -53,7 +64,8 @@ export default function Home() {
   const [hookText, setHookText] = useState('');
   const [platform, setPlatform] = useState('');
   const [category, setCategory] = useState('');
-  const [hashtags, setHashtags] = useState('');
+  const [hashtagInput, setHashtagInput] = useState('');
+  const [hashtagTokens, setHashtagTokens] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [analysis, setAnalysis] = useState<HookAnalysisResult | null>(null);
@@ -79,6 +91,23 @@ export default function Home() {
     localStorage.setItem('theme', newTheme);
   };
 
+  const addHashtagToken = (candidate: string) => {
+    const token = normalizeHashtagToken(candidate);
+    if (!token) return;
+    setHashtagTokens((prev) => {
+      if (prev.includes(token) || prev.length >= MAX_HASHTAGS) return prev;
+      return [...prev, token];
+    });
+  };
+
+  const commitHashtagInput = () => {
+    if (!hashtagInput.trim()) return;
+    for (const token of parseHashtagTokens(hashtagInput)) {
+      addHashtagToken(token);
+    }
+    setHashtagInput('');
+  };
+
   const handleAnalyze = async () => {
     if (!hookText || !platform || !category) return;
     setAnalyzeError(null);
@@ -98,7 +127,7 @@ export default function Home() {
           hook: hookText,
           platform,
           category,
-          hashtag: hashtags,
+          hashtag: hashtagTokens.map((token) => `#${token}`).join(", "),
         }),
       });
 
@@ -137,7 +166,8 @@ export default function Home() {
     setHookText('');
     setPlatform('');
     setCategory('');
-    setHashtags('');
+    setHashtagInput('');
+    setHashtagTokens([]);
     setAnalysis(null);
     setAnalysisMeta(null);
     setProgress(0);
@@ -158,23 +188,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 font-sans relative overflow-hidden flex flex-col transition-colors duration-300">
-      {/* Background Image with Overlay */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <img 
-          src={bgImage} 
-          alt="Cinematic Background" 
-          className="w-full h-full object-cover opacity-5 dark:opacity-20 grayscale dark:grayscale-0"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/40" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay" />
-      </div>
+      <SimrunBackground />
+      <div className="fixed inset-0 z-0 pointer-events-none bg-gradient-to-t from-background via-background/78 to-background/28" />
 
       {/* Header */}
       <header className="relative z-10 p-4 md:p-6 flex items-center justify-between border-b border-border backdrop-blur-md bg-background/50">
-        <div className="flex items-center gap-2 md:gap-3 cursor-pointer" onClick={() => window.location.href = '/'}>
-          <div className="w-6 h-6 md:w-8 md:h-8 bg-foreground text-background flex items-center justify-center font-display font-bold text-sm md:text-xl rounded-sm">B</div>
-          <span className="font-display text-lg md:text-xl tracking-widest uppercase">BackStage</span>
-        </div>
+        <BrandLockup />
         <div className="flex items-center gap-4 md:gap-6">
           <div className="hidden sm:block text-xs md:text-sm text-muted-foreground tracking-wide uppercase font-medium cursor-pointer hover:text-foreground transition-colors" onClick={() => window.location.href = '/pricing'}>Pricing</div>
           <button 
@@ -293,16 +312,67 @@ export default function Home() {
                 {/* Field 4: Hashtag */}
                 <div className="space-y-1.5 pb-2">
                   <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest block mb-1 font-display">Hashtag</label>
-                  <input 
-                    type="text"
-                    className="w-full bg-background border border-border/80 rounded-xl p-3 md:p-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 focus:ring-1 focus:ring-foreground/30 transition-all shadow-sm"
-                    placeholder="#foodtok, #grwm, #gamingsetup"
-                    value={hashtags}
-                    onChange={(e) => setHashtags(e.target.value)}
-                    disabled={isUploading}
-                    data-testid="input-hashtags"
-                  />
-                  <p className="text-[12px] text-muted-foreground font-light pt-1">Add 1–3 tags your audience would actually search.</p>
+                  <div className="w-full bg-background border border-border/80 rounded-xl p-2.5 md:p-3 text-sm text-foreground focus-within:border-foreground/30 focus-within:ring-1 focus-within:ring-foreground/30 transition-all shadow-sm">
+                    <div className="flex flex-wrap gap-2 items-center">
+                      {hashtagTokens.map((token) => (
+                        <span
+                          key={token}
+                          className="inline-flex items-center gap-1 rounded-full border border-border/80 bg-secondary/60 px-2.5 py-1 text-xs"
+                        >
+                          #{token}
+                          {!isUploading && (
+                            <button
+                              type="button"
+                              className="text-muted-foreground hover:text-foreground"
+                              onClick={() => {
+                                setHashtagTokens((prev) => prev.filter((t) => t !== token));
+                              }}
+                              aria-label={`Remove hashtag ${token}`}
+                            >
+                              ×
+                            </button>
+                          )}
+                        </span>
+                      ))}
+                      <input
+                        type="text"
+                        className="min-w-[120px] flex-1 bg-transparent border-0 p-1 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                        placeholder={hashtagTokens.length === 0 ? "#foodtok #grwm #gamingsetup" : "Add hashtag"}
+                        value={hashtagInput}
+                        onChange={(e) => setHashtagInput(e.target.value)}
+                        onBlur={commitHashtagInput}
+                        onKeyDown={(e) => {
+                          if (e.key === " " || e.key === "Enter" || e.key === "," || e.key === "Tab") {
+                            e.preventDefault();
+                            commitHashtagInput();
+                            return;
+                          }
+                          if (e.key === "Backspace" && !hashtagInput && hashtagTokens.length > 0) {
+                            setHashtagTokens((prev) => prev.slice(0, -1));
+                          }
+                        }}
+                        onPaste={(e) => {
+                          const text = e.clipboardData.getData("text");
+                          const parsed = parseHashtagTokens(text);
+                          if (parsed.length === 0) return;
+                          e.preventDefault();
+                          setHashtagTokens((prev) => {
+                            const next = [...prev];
+                            for (const token of parsed) {
+                              if (next.length >= MAX_HASHTAGS) break;
+                              if (!next.includes(token)) next.push(token);
+                            }
+                            return next;
+                          });
+                        }}
+                        disabled={isUploading || hashtagTokens.length >= MAX_HASHTAGS}
+                        data-testid="input-hashtags"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[12px] text-muted-foreground font-light pt-1">
+                    Type a hashtag and press space to create a label (up to {MAX_HASHTAGS}).
+                  </p>
                 </div>
 
                 {analyzeError && (
