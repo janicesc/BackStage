@@ -463,27 +463,48 @@ function enforceBenchmarkEvidence(
   analysis: HookAnalysisResult,
   market: MarketContextItem[],
 ): HookAnalysisResult {
-  const fallback = market
+  const fallbackPool = market
     .filter((m) => m.webVideoUrl)
-    .sort((a, b) => (toEpochMs(b.createTimeISO) ?? 0) - (toEpochMs(a.createTimeISO) ?? 0))
-    .slice(0, Math.max(3, Math.min(8, analysis.benchmarks.length)))
-    .map((m) => ({
-      text: m.text || "Top performing post",
-      views: `${m.playCount.toLocaleString()} views`,
-      url: m.webVideoUrl ?? undefined,
-      platform: m.platform,
-      postedAt: m.createTimeISO ?? undefined,
-    }));
+    .sort((a, b) => {
+      const ae = toEpochMs(a.createTimeISO) ?? 0;
+      const be = toEpochMs(b.createTimeISO) ?? 0;
+      if (be !== ae) return be - ae;
+      if (b.playCount !== a.playCount) return b.playCount - a.playCount;
+      return b.engagementScore - a.engagementScore;
+    });
 
-  const mergedBenchmarks = analysis.benchmarks.map((bench, i) => {
-    const needsSource = !bench.url;
-    if (!needsSource) return bench;
-    const replacement = fallback[i];
-    return replacement ?? bench;
+  const marketToBenchmarkRow = (
+    m: MarketContextItem,
+  ): HookAnalysisResult["benchmarks"][number] => ({
+    text: m.text || "Top performing post",
+    views: `${m.playCount.toLocaleString()} views`,
+    url: m.webVideoUrl ?? undefined,
+    platform: m.platform,
+    postedAt: m.createTimeISO ?? undefined,
   });
-  const sourceBackedBenchmarks = mergedBenchmarks.filter(
+
+  /** Index-aligned backfill only for LLM rows missing URLs */
+  const mergedBenchmarks = analysis.benchmarks.map((bench, i) => {
+    if (bench.url) return bench;
+    const replacement = fallbackPool[i] ? marketToBenchmarkRow(fallbackPool[i]) : bench;
+    return replacement;
+  });
+
+  const rowsWithUrl = mergedBenchmarks.filter(
     (b) => typeof b.url === "string" && b.url.length > 0,
   );
+  const usedUrls = new Set(rowsWithUrl.map((b) => b.url));
+
+  /** Append distinct URL-backed market posts until we hit common display target (3) */
+  let sourceBackedBenchmarks = rowsWithUrl;
+  for (const m of fallbackPool) {
+    if (!m.webVideoUrl || usedUrls.has(m.webVideoUrl)) continue;
+    if (sourceBackedBenchmarks.length >= Math.max(MIN_URL_BACKED_BENCHMARKS, 3)) break;
+    const row = marketToBenchmarkRow(m);
+    sourceBackedBenchmarks = [...sourceBackedBenchmarks, row];
+    usedUrls.add(m.webVideoUrl);
+  }
+
   const recencySorted = sourceBackedBenchmarks.sort(
     (a, b) => (toEpochMs(b.postedAt ?? null) ?? 0) - (toEpochMs(a.postedAt ?? null) ?? 0),
   );
