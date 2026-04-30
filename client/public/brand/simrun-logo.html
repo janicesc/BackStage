@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>simrun — animated logo mark</title>
+  <style>
+    /* Demo wrapper only — remove when integrating */
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      background: radial-gradient(ellipse at center, #0a1612 0%, #03060a 75%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .demo-frame { width: 460px; height: 460px; }
+
+    /* ============ COMPONENT START ============ */
+    /* The .simrun-logo element is the entire animated logo mark.
+       It scales to fill its parent and locks to a 1:1 aspect ratio.
+       Set the parent's width to the size you want the logo rendered. */
+
+    .simrun-logo {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+    }
+
+    /* Soft green ambient glow behind the rings. Remove this rule
+       if you want a fully crisp mark with no halo. */
+    .simrun-logo::before {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      background: radial-gradient(circle, rgba(63, 255, 90, 0.28), transparent 65%);
+      filter: blur(50px);
+      animation: simrun-breathe 5s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    @keyframes simrun-breathe {
+      0%, 100% { opacity: 0.55; transform: scale(1); }
+      50%      { opacity: 1;    transform: scale(1.08); }
+    }
+
+    .simrun-logo svg {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+      display: block;
+    }
+    /* ============ COMPONENT END ============ */
+  </style>
+</head>
+<body>
+  <div class="demo-frame">
+    <!-- ============ COMPONENT MARKUP START ============ -->
+    <div class="simrun-logo" aria-label="simrun">
+      <svg viewBox="0 0 500 500" role="img">
+        <defs>
+          <filter id="simrun-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <circle data-ring="outer" cx="250" cy="250" r="180" fill="#0d3f0d" />
+        <circle data-ring="mid"   cx="250" cy="250" r="135" fill="#167a16" />
+        <circle data-ring="inner" cx="250" cy="250" r="90"  fill="#2bd62b" filter="url(#simrun-glow)" />
+        <circle data-ring="core"  cx="250" cy="250" r="55"  fill="#6dff80" filter="url(#simrun-glow)" />
+        <circle data-ring="dot"   cx="250" cy="250" r="22"  fill="#050505" />
+      </svg>
+    </div>
+    <!-- ============ COMPONENT MARKUP END ============ -->
+  </div>
+
+  <!-- GSAP — required for the smooth time-based animation.
+       If your build uses npm: `npm i gsap` and `import gsap from 'gsap'` instead. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    /* ============ COMPONENT SCRIPT START ============ */
+    /* Each .simrun-logo on the page animates independently. The dot drifts on a
+       smooth pseudo-noise field; the rings chase it through a parallax cascade
+       (smaller rings = larger amplitude, faster response). Each ring also adds
+       a smaller per-ring jitter so the motion never looks locked.
+       A separate slow tween breathes each ring's radius for an organic pulse. */
+    (function () {
+      document.querySelectorAll('.simrun-logo').forEach(function (root) {
+        var CX = 250, CY = 250, SCALE = 110;
+        var rings = [
+          { node: root.querySelector('[data-ring="outer"]'), amp: 0.10, jitter: 5,  resp: 0.55, phase: 1.1, baseR: 180 },
+          { node: root.querySelector('[data-ring="mid"]'),   amp: 0.28, jitter: 8,  resp: 0.30, phase: 2.7, baseR: 135 },
+          { node: root.querySelector('[data-ring="inner"]'), amp: 0.55, jitter: 10, resp: 0.18, phase: 4.3, baseR: 90  },
+          { node: root.querySelector('[data-ring="core"]'),  amp: 0.80, jitter: 9,  resp: 0.10, phase: 5.9, baseR: 55  },
+          { node: root.querySelector('[data-ring="dot"]'),   amp: 1.00, jitter: 0,  resp: 0,    phase: 0,   baseR: 22  }
+        ];
+        var state = rings.map(function () { return { x: CX, y: CY }; });
+
+        function noise(t, seed) {
+          return Math.sin(t * 0.31 + seed * 1.7) * 0.50
+               + Math.sin(t * 0.73 + seed * 3.1) * 0.30
+               + Math.sin(t * 1.27 + seed * 5.3) * 0.15;
+        }
+
+        var lastT = null;
+        gsap.ticker.add(function (time) {
+          var dt = lastT === null ? 1 / 60 : Math.min(0.1, time - lastT);
+          lastT = time;
+          var dotDriftX = SCALE * noise(time, 1.0);
+          var dotDriftY = SCALE * noise(time, 5.0);
+          for (var i = 0; i < rings.length; i++) {
+            var r = rings[i];
+            var tx = CX + r.amp * dotDriftX + r.jitter * noise(time * 1.4, r.phase + 11);
+            var ty = CY + r.amp * dotDriftY + r.jitter * noise(time * 1.4, r.phase + 21);
+            if (r.resp <= 0) {
+              state[i].x = tx; state[i].y = ty;
+            } else {
+              var f = 1 - Math.exp(-dt / r.resp);
+              state[i].x += (tx - state[i].x) * f;
+              state[i].y += (ty - state[i].y) * f;
+            }
+            r.node.setAttribute('cx', state[i].x);
+            r.node.setAttribute('cy', state[i].y);
+          }
+        });
+
+        rings.forEach(function (r, i) {
+          gsap.to(r.node, {
+            attr: { r: r.baseR * 1.04 },
+            duration: 2,
+            delay: i * 0.08,
+            yoyo: true, repeat: -1, ease: 'sine.inOut'
+          });
+        });
+      });
+    })();
+    /* ============ COMPONENT SCRIPT END ============ */
+  </script>
+</body>
+</html>

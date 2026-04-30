@@ -1,6 +1,8 @@
 import { Check, Star, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { BrandLockup } from "@/components/BrandLockup";
+import { SimrunBackground } from "@/components/SimrunBackground";
 
 export default function Pricing() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
@@ -24,13 +26,11 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans relative overflow-hidden flex flex-col transition-colors duration-300">
-      
+      <SimrunBackground />
+
       {/* Header */}
       <header className="relative z-10 p-4 md:p-6 flex items-center justify-between border-b border-border backdrop-blur-md bg-background/50">
-        <div className="flex items-center gap-2 md:gap-3 cursor-pointer" onClick={() => window.location.href = '/'}>
-          <div className="w-6 h-6 md:w-8 md:h-8 bg-foreground text-background flex items-center justify-center font-display font-bold text-sm md:text-xl rounded-sm">B</div>
-          <span className="font-display text-lg md:text-xl tracking-widest uppercase">BackStage</span>
-        </div>
+        <BrandLockup />
         <div className="flex items-center gap-4 md:gap-6">
           <div className="hidden sm:block text-xs md:text-sm text-muted-foreground tracking-wide uppercase font-medium cursor-pointer hover:text-foreground transition-colors" onClick={() => window.location.href = '/'}>Home</div>
           <button 

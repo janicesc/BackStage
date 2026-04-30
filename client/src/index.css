@@ -1,46 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@font-face {
-  font-family: 'Roobert';
-  src: url('/fonts/RoobertTRIAL-Light-BF67243fd502239.otf') format('opentype');
-  font-weight: 300;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Roobert';
-  src: url('/fonts/RoobertTRIAL-Regular-BF67243fd53fdf2.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Roobert';
-  src: url('/fonts/RoobertTRIAL-Medium-BF67243fd53e059.otf') format('opentype');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Roobert';
-  src: url('/fonts/RoobertTRIAL-SemiBold-BF67243fd54213d.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Roobert';
-  src: url('/fonts/RoobertTRIAL-Bold-BF67243fd540abb.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-}
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Roobert', 'Inter', sans-serif;
-  --font-display: 'Roobert', 'Oswald', sans-serif;
+  --font-sans: 'Readex Pro', sans-serif;
+  --font-display: 'Space Grotesk', 'Readex Pro', sans-serif;
+  --font-ui: 'Roobert', 'Readex Pro', 'Space Grotesk', sans-serif;
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -127,9 +93,38 @@
   }
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    font-optical-sizing: auto;
+    letter-spacing: 0.003em;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-tight;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  strong,
+  b {
+    @apply font-display;
+    font-weight: 600;
+  }
+
+  button,
+  input,
+  textarea,
+  select,
+  label {
+    @apply font-ui;
+    letter-spacing: 0.002em;
+  }
+}
+
+@keyframes simrun-twinkle {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.55;
   }
 }

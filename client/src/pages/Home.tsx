@@ -277,7 +277,7 @@ export default function Home() {
                         <option value="fashion">👗 Fashion</option>
                         <option value="beauty">💄 Beauty & Makeup</option>
                         <option value="fitness">💪 Fitness</option>
-                        <option value="wellness">🧘 Self-Care & Wellness</option>
+                        <option value="wellness">🧘 Health & Wellness</option>
                       </optgroup>
                       <optgroup label="Gaming & Culture">
                         <option value="gaming">🎮 Gaming</option>
@@ -292,17 +292,24 @@ export default function Home() {
                       </optgroup>
                       <optgroup label="Lifestyle">
                         <option value="vlog">🌿 Lifestyle & Vlog</option>
-                        <option value="travel">🎒 Travel</option>
                         <option value="food">🍳 Food & Cooking</option>
+                        <option value="travel">🎒 Travel</option>
+                        <option value="relationships">❤️ Relationships & Dating</option>
                         <option value="pets">🐾 Pets</option>
                         <option value="parenting">👶 Parenting & Family</option>
+                        <option value="plants">🌱 Plants & Nature</option>
                       </optgroup>
-                      <optgroup label="Creative & Education">
+                      <optgroup label="Creative">
                         <option value="art">🎨 Art & Design</option>
                         <option value="diy">✂️ DIY & Crafts</option>
-                        <option value="books">📚 Books & Reading</option>
+                        <option value="photo-video-editing">📸 Photo & Video Editing</option>
+                      </optgroup>
+                      <optgroup label="Education & Knowledge">
+                        <option value="tech-ai">💻 Tech & AI</option>
+                        <option value="finance">💰 Finance</option>
                         <option value="advice">💡 Advice & Education</option>
-                        <option value="plants">🌱 Plants & Nature</option>
+                        <option value="language-learning">🗣️ Language Learning</option>
+                        <option value="books">📚 Books & Reading</option>
                       </optgroup>
                       <option value="other">＋ Other</option>
                     </select>

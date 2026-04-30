@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>simrun lockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@160..700&family=Space+Grotesk:wght@300..700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg: radial-gradient(ellipse at center, #0a1612 0%, #03060a 75%);
+      --wordmark: #0b0d0d;
+      --tagline: rgba(234, 240, 236, 0.9);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+      font-synthesis-weight: none;
+      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .lockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 18px 20px;
+      border-radius: 14px;
+      isolation: isolate;
+    }
+
+    .mark {
+      width: 132px;
+      height: 132px;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .mark::before {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      background: radial-gradient(circle, rgba(63, 255, 90, 0.28), transparent 65%);
+      filter: blur(18px);
+      z-index: 0;
+    }
+
+    .mark svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    .text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+      margin-left: -6px;
+      transform: translateY(0.5px);
+    }
+
+    .wordmark {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 82px;
+      font-weight: 700;
+      letter-spacing: -0.018em;
+      color: var(--wordmark);
+      text-transform: lowercase;
+    }
+
+    .tagline {
+      font-family: "Readex Pro", sans-serif;
+      font-size: 7px;
+      margin-top: 1px;
+      color: var(--tagline);
+      letter-spacing: 0.1em;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="lockup" aria-label="simrun synthetic audience logo">
+    <div class="mark">
+      <svg viewBox="0 0 500 500" role="img" aria-label="simrun mark">
+        <defs>
+          <filter id="simrun-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <circle data-ring="outer" cx="250" cy="250" r="180" fill="#0d3f0d" />
+        <circle data-ring="mid" cx="250" cy="250" r="135" fill="#167a16" />
+        <circle data-ring="inner" cx="250" cy="250" r="90" fill="#2bd62b" filter="url(#simrun-glow)" />
+        <circle data-ring="core" cx="250" cy="250" r="55" fill="#6dff80" filter="url(#simrun-glow)" />
+        <circle data-ring="dot" cx="250" cy="250" r="22" fill="#050505" />
+      </svg>
+    </div>
+    <div class="text">
+      <div class="wordmark">simrun</div>
+      <div class="tagline">synthetic audience</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var root = document.querySelector(".mark");
+      if (!root) return;
+
+      var CX = 250, CY = 250, SCALE = 110;
+      var rings = [
+        { node: root.querySelector('[data-ring="outer"]'), amp: 0.10, jitter: 5,  resp: 0.55, phase: 1.1, baseR: 180 },
+        { node: root.querySelector('[data-ring="mid"]'),   amp: 0.28, jitter: 8,  resp: 0.30, phase: 2.7, baseR: 135 },
+        { node: root.querySelector('[data-ring="inner"]'), amp: 0.55, jitter: 10, resp: 0.18, phase: 4.3, baseR: 90  },
+        { node: root.querySelector('[data-ring="core"]'),  amp: 0.80, jitter: 9,  resp: 0.10, phase: 5.9, baseR: 55  },
+        { node: root.querySelector('[data-ring="dot"]'),   amp: 1.00, jitter: 0,  resp: 0,    phase: 0,   baseR: 22  }
+      ];
+      var state = rings.map(function () { return { x: CX, y: CY }; });
+
+      function noise(t, seed) {
+        return Math.sin(t * 0.31 + seed * 1.7) * 0.50
+             + Math.sin(t * 0.73 + seed * 3.1) * 0.30
+             + Math.sin(t * 1.27 + seed * 5.3) * 0.15;
+      }
+
+      var start = performance.now();
+      var last = start;
+
+      function tick(now) {
+        var time = (now - start) / 1000;
+        var dt = Math.min(0.1, (now - last) / 1000);
+        last = now;
+        var dotX = SCALE * noise(time, 1.0);
+        var dotY = SCALE * noise(time, 5.0);
+
+        rings.forEach(function (r, i) {
+          if (!r.node) return;
+
+          var tx = CX + r.amp * dotX + r.jitter * noise(time * 1.4, r.phase + 11);
+          var ty = CY + r.amp * dotY + r.jitter * noise(time * 1.4, r.phase + 21);
+
+          if (r.resp <= 0) {
+            state[i].x = tx;
+            state[i].y = ty;
+          } else {
+            var smooth = 1 - Math.exp(-dt / r.resp);
+            state[i].x += (tx - state[i].x) * smooth;
+            state[i].y += (ty - state[i].y) * smooth;
+          }
+
+          var breathe = 1 + 0.04 * Math.sin(time * Math.PI + i * 0.08);
+          r.node.setAttribute("cx", state[i].x.toFixed(2));
+          r.node.setAttribute("cy", state[i].y.toFixed(2));
+          r.node.setAttribute("r", (r.baseR * breathe).toFixed(2));
+        });
+
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+    })();
+  </script>
+</body>
+</html>
