@@ -185,6 +185,13 @@ export default function Home() {
     if (v >= 50) return "bg-amber-400";
     return "bg-rose-400";
   };
+  const selectChevronStroke = theme === "dark" ? "rgba(255,255,255,0.5)" : "rgba(26,26,26,0.45)";
+  const selectChevronStyle = {
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(selectChevronStroke)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 16px center",
+    backgroundSize: "16px",
+  } as const;
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 font-sans relative overflow-hidden flex flex-col transition-colors duration-300">
@@ -244,7 +251,7 @@ export default function Home() {
                       onChange={(e) => setPlatform(e.target.value)}
                       disabled={isUploading}
                       data-testid="select-platform"
-                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center', backgroundSize: '16px' }}
+                      style={selectChevronStyle}
                     >
                       <option value="" disabled>Select platform</option>
                       <option value="tiktok">TikTok</option>
@@ -261,7 +268,7 @@ export default function Home() {
                       onChange={(e) => setCategory(e.target.value)}
                       disabled={isUploading}
                       data-testid="select-category"
-                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center', backgroundSize: '16px' }}
+                      style={selectChevronStyle}
                     >
                       <option value="" disabled>Select category</option>
                       <optgroup label="Entertainment">
@@ -427,7 +434,7 @@ export default function Home() {
                   key="results"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="h-full flex flex-col relative bg-[#0f0f0f]/95 border border-border/40 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-2xl max-w-[600px] mx-auto w-full"
+                  className="h-full flex flex-col relative bg-card/95 border border-border/40 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-2xl max-w-[600px] mx-auto w-full"
                   data-testid="analysis-results"
                 >
                   {/* Hero Section */}

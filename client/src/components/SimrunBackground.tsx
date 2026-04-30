@@ -25,12 +25,12 @@ export function SimrunBackground() {
   );
 
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-[radial-gradient(ellipse_at_center,_#0a1612_0%,_#03060a_75%)]">
+    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-[radial-gradient(ellipse_at_center,_#f7f9ff_0%,_#eef2ff_72%)] dark:bg-[radial-gradient(ellipse_at_center,_#0a1612_0%,_#03060a_75%)]">
       <div className="absolute inset-0">
         {stars.map((star, i) => (
           <span
             key={i}
-            className="absolute rounded-full bg-[#aaffb5] opacity-20 animate-[simrun-twinkle_4s_ease-in-out_infinite]"
+            className="absolute rounded-full bg-emerald-400/35 dark:bg-[#aaffb5] opacity-20 animate-[simrun-twinkle_4s_ease-in-out_infinite]"
             style={{
               left: star.left,
               top: star.top,
